@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1211</width>
-    <height>630</height>
+    <width>1026</width>
+    <height>642</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>1001</width>
+      <width>1031</width>
       <height>581</height>
      </rect>
     </property>
@@ -30,8 +30,8 @@
      <widget class="QLineEdit" name="flightmodeKey">
       <property name="geometry">
        <rect>
-        <x>800</x>
-        <y>320</y>
+        <x>770</x>
+        <y>280</y>
         <width>31</width>
         <height>31</height>
        </rect>
@@ -46,8 +46,8 @@
      <widget class="QLabel" name="armLabel">
       <property name="geometry">
        <rect>
-        <x>750</x>
-        <y>280</y>
+        <x>720</x>
+        <y>240</y>
         <width>31</width>
         <height>21</height>
        </rect>
@@ -59,8 +59,8 @@
      <widget class="QLineEdit" name="beeperKey">
       <property name="geometry">
        <rect>
-        <x>800</x>
-        <y>370</y>
+        <x>770</x>
+        <y>330</y>
         <width>31</width>
         <height>31</height>
        </rect>
@@ -75,8 +75,8 @@
      <widget class="QLabel" name="beeperLabel">
       <property name="geometry">
        <rect>
-        <x>740</x>
-        <y>380</y>
+        <x>710</x>
+        <y>340</y>
         <width>51</width>
         <height>21</height>
        </rect>
@@ -85,11 +85,11 @@
        <string>Beeper</string>
       </property>
      </widget>
-     <widget class="QLabel" name="armLabel_2">
+     <widget class="QLabel" name="angleLabel">
       <property name="geometry">
        <rect>
-        <x>650</x>
-        <y>330</y>
+        <x>620</x>
+        <y>290</y>
         <width>41</width>
         <height>21</height>
        </rect>
@@ -98,27 +98,11 @@
        <string>Angle</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit_3">
+     <widget class="QLineEdit" name="currentMode">
       <property name="geometry">
        <rect>
-        <x>850</x>
-        <y>320</y>
-        <width>31</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="maxLength">
-       <number>1</number>
-      </property>
-     </widget>
-     <widget class="QLineEdit" name="lineEdit_7">
-      <property name="geometry">
-       <rect>
-        <x>800</x>
-        <y>470</y>
+        <x>820</x>
+        <y>280</y>
         <width>31</width>
         <height>31</height>
        </rect>
@@ -133,8 +117,8 @@
      <widget class="QLabel" name="modesLabel">
       <property name="geometry">
        <rect>
-        <x>750</x>
-        <y>150</y>
+        <x>720</x>
+        <y>110</y>
         <width>121</width>
         <height>21</height>
        </rect>
@@ -146,8 +130,8 @@
      <widget class="QLineEdit" name="armKey">
       <property name="geometry">
        <rect>
-        <x>800</x>
-        <y>270</y>
+        <x>770</x>
+        <y>230</y>
         <width>31</width>
         <height>31</height>
        </rect>
@@ -162,8 +146,8 @@
      <widget class="QLineEdit" name="prearmKey">
       <property name="geometry">
        <rect>
-        <x>800</x>
-        <y>220</y>
+        <x>770</x>
+        <y>180</y>
         <width>31</width>
         <height>31</height>
        </rect>
@@ -175,11 +159,11 @@
        <number>1</number>
       </property>
      </widget>
-     <widget class="QLabel" name="armLabel_3">
+     <widget class="QLabel" name="horizonLabel">
       <property name="geometry">
        <rect>
-        <x>700</x>
-        <y>330</y>
+        <x>670</x>
+        <y>290</y>
         <width>51</width>
         <height>21</height>
        </rect>
@@ -188,11 +172,11 @@
        <string>Horizon</string>
       </property>
      </widget>
-     <widget class="QLabel" name="armLabel_4">
+     <widget class="QLabel" name="acroLabel">
       <property name="geometry">
        <rect>
-        <x>760</x>
-        <y>330</y>
+        <x>730</x>
+        <y>290</y>
         <width>31</width>
         <height>21</height>
        </rect>
@@ -204,8 +188,8 @@
      <widget class="QLineEdit" name="OSDKey">
       <property name="geometry">
        <rect>
-        <x>800</x>
-        <y>420</y>
+        <x>770</x>
+        <y>380</y>
         <width>31</width>
         <height>31</height>
        </rect>
@@ -220,8 +204,8 @@
      <widget class="QLabel" name="displayFrame">
       <property name="geometry">
        <rect>
-        <x>100</x>
-        <y>50</y>
+        <x>70</x>
+        <y>10</y>
         <width>451</width>
         <height>451</height>
        </rect>
@@ -233,8 +217,8 @@
      <widget class="QPushButton" name="Stop">
       <property name="geometry">
        <rect>
-        <x>200</x>
-        <y>520</y>
+        <x>170</x>
+        <y>480</y>
         <width>80</width>
         <height>23</height>
        </rect>
@@ -246,8 +230,8 @@
      <widget class="QPushButton" name="Start">
       <property name="geometry">
        <rect>
-        <x>360</x>
-        <y>520</y>
+        <x>330</x>
+        <y>480</y>
         <width>80</width>
         <height>23</height>
        </rect>
@@ -259,8 +243,8 @@
      <widget class="QLabel" name="prearmLabel">
       <property name="geometry">
        <rect>
-        <x>740</x>
-        <y>230</y>
+        <x>710</x>
+        <y>190</y>
         <width>51</width>
         <height>21</height>
        </rect>
@@ -272,8 +256,8 @@
      <widget class="QLabel" name="OSDDisableLabel">
       <property name="geometry">
        <rect>
-        <x>680</x>
-        <y>430</y>
+        <x>650</x>
+        <y>390</y>
         <width>111</width>
         <height>21</height>
        </rect>
@@ -286,7 +270,188 @@
       </property>
      </widget>
     </widget>
-    <widget class="QWidget" name="page_2"/>
+    <widget class="QWidget" name="page_2">
+     <widget class="QLabel" name="controlsSetLabel">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>120</y>
+        <width>57</width>
+        <height>15</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Controls</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>260</x>
+        <y>60</y>
+        <width>481</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="typeBoxLabel">
+         <property name="text">
+          <string>Please select drone system</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="typeDropDown">
+         <item>
+          <property name="text">
+           <string>Betaflight System Based Drones</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Ardupilot System Based Drones</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>260</x>
+        <y>160</y>
+        <width>51</width>
+        <height>261</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QLineEdit" name="throttleSetUp">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="maxLength">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLineEdit" name="throttleSetDown">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="maxLength">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLineEdit" name="yawSetClockwise">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="maxLength">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="yawSetAnticlockwise">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="maxLength">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLineEdit" name="rollSetLeft">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="maxLength">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="rollSetRight">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="maxLength">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLineEdit" name="pitchSetFront">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="maxLength">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="pitchSetBack">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="maxLength">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>170</y>
+        <width>61</width>
+        <height>241</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QLabel" name="throttleSetLabel">
+         <property name="text">
+          <string>Throttle</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="yawSetLabel">
+         <property name="text">
+          <string>Yaw</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="rollSetLabel">
+         <property name="text">
+          <string>Roll</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="pitchSetLabel">
+         <property name="text">
+          <string>Pitch</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="page_3"/>
+    <widget class="QWidget" name="page_4"/>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -294,7 +459,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1211</width>
+     <width>1026</width>
      <height>20</height>
     </rect>
    </property>
@@ -305,7 +470,6 @@
    </widget>
    <addaction name="menu_File"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
@@ -317,6 +481,7 @@
     <bool>false</bool>
    </attribute>
   </widget>
+  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>
