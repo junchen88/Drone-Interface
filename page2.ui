@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>998</width>
+    <height>524</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="page2GridLay">
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="settingVerticalLay" stretch="0,1,1,1,0">
+      <item>
+       <layout class="QHBoxLayout" name="droneSysHorizontalLay" stretch="1,0,2,0,1">
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Please select drone system</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="typeDropDown">
+          <item>
+           <property name="text">
+            <string>Betaflight System Based Drones</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Ardupilot System Based Drones</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="selectButton">
+          <property name="text">
+           <string>Select</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="controlModeSetHorizontalLay" stretch="1,0,1">
+        <item>
+         <layout class="QVBoxLayout" name="controlSetVerticalLay" stretch="0,1">
+          <item>
+           <widget class="QLabel" name="controlsSetLabel">
+            <property name="text">
+             <string>Controls</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="controlSetGrid" columnstretch="0,0,0">
+            <item row="0" column="1">
+             <widget class="QComboBox" name="throttleSetDown"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="yawSetLabel">
+              <property name="text">
+               <string>Yaw</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="yawSetAnticlockwise"/>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="rollSetLabel">
+              <property name="text">
+               <string>Roll</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="throttleSetLabel">
+              <property name="text">
+               <string>Throttle</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QComboBox" name="pitchSetBack"/>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="pitchSetLabel">
+              <property name="text">
+               <string>Pitch</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QComboBox" name="rollSetLeft"/>
+            </item>
+            <item row="0" column="2">
+             <widget class="QComboBox" name="throttleSetUp"/>
+            </item>
+            <item row="1" column="2">
+             <widget class="QComboBox" name="yawSetClockwise"/>
+            </item>
+            <item row="2" column="2">
+             <widget class="QComboBox" name="rollSetRight"/>
+            </item>
+            <item row="3" column="2">
+             <widget class="QComboBox" name="pitchSetFront"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="modeSetVerticalLay" stretch="0,1">
+          <item>
+           <widget class="QLabel" name="modeSetLabel">
+            <property name="text">
+             <string>Modes/Features</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="modeSetGrid">
+            <item row="0" column="0">
+             <widget class="QLabel" name="preArmSetLabel">
+              <property name="text">
+               <string>Prearm</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
+             <widget class="QComboBox" name="OSDSetSelect"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="armSetLabel">
+              <property name="text">
+               <string>Arm</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="flightModeSetLabel">
+              <property name="text">
+               <string>Flight Mode</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="OSDSetLabel">
+              <property name="text">
+               <string>OSD Disable SW</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="1">
+             <widget class="QComboBox" name="beeperSetSelect"/>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="armSetSelect"/>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="preArmSetSelect"/>
+            </item>
+            <item row="3" column="0">
+             <widget class="QLabel" name="beeperSetLabel">
+              <property name="text">
+               <string>Beeper</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QPushButton" name="flightModeSetBut">
+              <property name="text">
+               <string>Flight Mode Key Setting</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <spacer name="verticalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="confirmSetButton">
+        <property name="text">
+         <string>Confirm Your Settings</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>998</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

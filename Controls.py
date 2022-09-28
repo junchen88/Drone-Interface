@@ -33,8 +33,10 @@ class Controls(Ui_MainWindow):
         # start the thread
         self.thread.start()
 
-        initPage2(self, mainWindowBase)
+        initPage2(self)
         self.chooseInit(DEFAULT_MODEL)
+
+
         self.currentSys = DEFAULT_MODEL
 
  
@@ -43,22 +45,41 @@ class Controls(Ui_MainWindow):
     def chooseInit(self, model):
         MODELSINITDICT[model] = True
         if model == 'Betaflight':
-            self.groupBoxBeta = BetaFlightBoxWidget(self.page_2).groupBoxBeta
+            self.groupBoxBeta = BetaFlightBoxWidget(self.page_2).getWidget()
+            self.groupBoxHomeBeta = BetaFlightBoxWidget(self.page).getWidget()
+            self.controlModeSetHorizontalLay.addWidget(self.groupBoxBeta)
+           
+            rightSpacer = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+            self.controlModeSetHorizontalLay.addItem(rightSpacer)
+            self.controlModeSetHorizontalLay.setStretch(0, 1)
+            self.controlModeSetHorizontalLay.setStretch(1, 1)
+            self.controlModeSetHorizontalLay.setStretch(3, 1)
+            self.controlModeSetHorizontalLay.setStretch(4, 1)
+
+            self.homeSettingVerticalLay.addWidget(self.groupBoxHomeBeta)
 
         elif model == 'Ardupilot':
+            self.groupBoxHomeArdu = ArdupilotBoxWidget(self.page).getWidget()
+            self.groupBoxArdu = ArdupilotBoxWidget(self.page_2).getWidget()
+            self.controlModeSetHorizontalLay.insertWidget(3,self.groupBoxArdu)
+            self.homeSettingVerticalLay.insertWidget(1, self.groupBoxHomeArdu)
 
-            self.groupBoxArdu = ArdupilotBoxWidget(self.page_2).groupBoxArdu
-                
+
         else:
-            print("Something's wrong - using default model")
+            print("Something's wrong - using default system")
             self.groupBoxBeta = BetaFlightBoxWidget(self.page_2).groupBoxBeta
+            self.groupBoxHomeBeta = BetaFlightBoxWidget(self.page).groupBoxBeta
 
+        
+
+    #RETURNS THE INTERFACE BASED ON THE DRONE SYSTEM
+    #IN THE FORMAT OF SETTING BOX, HOME BOX
     def getModel(self, model):
         if model == 'Betaflight':
-            return self.groupBoxBeta
+            return self.groupBoxBeta, self.groupBoxHomeBeta
 
         elif model == 'Ardupilot':
-            return self.groupBoxArdu
+            return self.groupBoxArdu, self.groupBoxHomeArdu
 
 
     #FUNCTION FOR CHANGING INTERFACE BASED ON THE DRONE SYSTEM
@@ -70,22 +91,24 @@ class Controls(Ui_MainWindow):
 
         #HIDE CURRENT, SHOW SELECTED SYSTEM INTERFACE
         currentSysBox = self.getModel(self.currentSys)
-        currentSysBox.hide()
+        currentSysBox[0].hide()
+        currentSysBox[1].hide()
         
         if not MODELSINITDICT[selectedModel]:
             #INITIALISE IF IT IS NOT INITIALISED
             self.chooseInit(selectedModel)
 
         newSysBox = self.getModel(selectedModel)
-        newSysBox.show()
+        newSysBox[0].show()
+        newSysBox[1].show()
         self.currentSys = selectedModel
-        childrenWidgets = self.page_2.children()
-        print(type(childrenWidgets))
+        
         
 
     
     def confirmSettings(self):
-        currentSysBox = self.getModel(self.currentSys)
+        currentSelectedSys = self.currentSys
+        currentSysBox = self.getModel(currentSelectedSys)
         self.throttleSetUp
         self.throttleSetDown
         self.yawSetClockwise
@@ -95,11 +118,23 @@ class Controls(Ui_MainWindow):
         self.pitchSetFront
         self.pitchSetBack
 
-        sysBoxChildren = currentSysBox.children()
+        if currentSelectedSys == 'Betaflight':
+            self.getBetaSettings()
 
-        
-        
-        print(type(childrenWidgets))
+        elif currentSelectedSys == 'Ardupilot':
+            self.getArduSettings()
+
+        else:
+            self.getBetaSettings()
+
+
+
+
+    def getBetaSettings(self):
+        pass  
+    
+    def getArduSettings(self):
+        pass
 
     #FOR CAMERA COMPONENT
     #___________________________________________________________________________________
