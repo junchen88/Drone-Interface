@@ -1,9 +1,7 @@
-from PyQt5 import QtGui
-from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QVBoxLayout
-from PyQt5.QtGui import QPixmap
+
 import sys
 import cv2
-from PyQt5.QtCore import pyqtSignal, pyqtSlot, Qt, QThread
+from PyQt5.QtCore import pyqtSignal, QThread
 import numpy as np
 
 ##IF USING VMWARE, NEED TO MAKE USB CONTROLLER AS 3.0
