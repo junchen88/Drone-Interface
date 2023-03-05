@@ -18,6 +18,7 @@ class videoStreamThread(QThread):
 
     def run(self):
         # 0 IS FOR THE PRIMARY CAMERA DEVICE
+        self.isRunning = True #change running status to true
         cap = cv2.VideoCapture(0)
         while self.isRunning:
             status, frame = cap.read()
@@ -28,8 +29,8 @@ class videoStreamThread(QThread):
 
     def stop(self):
         """Sets run flag to False and waits for thread to finish"""
-        self.isRunning = False
-        self.wait()
+        self.isRunning = False #change running status to false
+        self.exit()
 
     
         

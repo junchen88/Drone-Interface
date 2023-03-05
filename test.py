@@ -10,10 +10,12 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from ControlSettingWidget import *
+import string
 
+HOME = 'home'
 
 class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
+    def setupUi(self, MainWindow, yamlHelper, keySettingInfo):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1047, 626)
         MainWindow.setAutoFillBackground(False)
@@ -64,7 +66,11 @@ class Ui_MainWindow(object):
         self.homeSettingVerticalLay = QtWidgets.QVBoxLayout()
         self.homeSettingVerticalLay.setObjectName("homeSettingVerticalLay")
         
-        self.controlHomeSetting = ControlSettingWidget(self.page).getWidget()
+
+        #TODO ADD USED KEY LIST HERE
+        self.availableKeys = keySettingInfo.getAvailableKeys()
+        self.controlHomeSettingWidget = ControlSettingWidget(self.page, self.availableKeys, HOME, yamlHelper=yamlHelper, keySettingInfo=keySettingInfo)
+        self.controlHomeSetting = self.controlHomeSettingWidget.getLayout()
         self.homeSettingVerticalLay.addLayout(self.controlHomeSetting)
         self.page1HorizontalLay.addLayout(self.homeSettingVerticalLay)
         self.page1HorizontalLay.setStretch(0, 1)
@@ -106,3 +112,4 @@ class Ui_MainWindow(object):
         self.Start.setText(_translate("MainWindow", "Start"))
         self.menu_File.setTitle(_translate("MainWindow", "&File"))
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
+

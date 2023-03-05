@@ -5,11 +5,17 @@ class YamlHelper():
     
     def __init__(self):
         self.currentWorkingDir = os.getcwd()
-        self.defaultControlSettings = {}
-        self.defaultSysBasedSettings = {}
+        self.defaultSysBasedSettings = {} #stores the updated setting
         self.appSettings = {}
-        self.allSettings = {}
+        self.allSettings = {} #stores the setting from yaml file/updated when setting is saved into a file
+        self.readFromYamlFile()
+        self.defaultControlSettings = {}
+        try:
+            self.defaultControlSettings = self.allSettings['control'] #stores the updated setting
 
+        except Exception as e:
+            print(e)
+            self.defaultControlSettings = {}
 
     def writeSettings(self, selectedSys):
         """
@@ -21,7 +27,7 @@ class YamlHelper():
             if self.defaultControlSettings:
                 self.allSettings["control"] = self.defaultControlSettings
             if self.defaultSysBasedSettings:
-                self.allSettings[selectedSys] = self.defaultSysBasedSettings
+                self.allSettings[selectedSys] = self.defaultSysBasedSettings[selectedSys]
             if self.appSettings:
                 self.allSettings["app"] = self.appSettings
             yaml.dump(self.allSettings, file)
@@ -31,10 +37,23 @@ class YamlHelper():
             read setting from user config file
         """
         try:
+            with open(f"{self.currentWorkingDir}/user_settings.yaml", "r") as file:
+                self.allSettings = yaml.safe_load(file)
+                print(f"self.allSettings: {self.allSettings}")
 
-            with open(f"{self.currentWorkingDir}/user_settings.yaml", "w") as file:
-                self.allSettings = yaml.load(file, yaml.full_load)
-                
+            try:
+                self.defaultControlSettings = self.allSettings['control']
+
+            except Exception as e:
+                print(f"no control settings from user config file: {e}")
+                self.defaultControlSettings = {}
+
+            try:
+                self.defaultSysBasedSettings['Betaflight'] = self.allSettings['Betaflight']
+
+            except Exception as e:
+                print(f"no feature settings from user config file: {e}")
+                self.defaultSysBasedSettings['Betaflight'] = {}
 
         except Exception as e:
             print(f"failed to read from config file: {e}")
@@ -46,8 +65,24 @@ class YamlHelper():
         """
         self.defaultControlSettings = controlSettings
 
-    def setSysBasedSettings(self, sysBasedSettings):
+    def setSysBasedSettings(self, sysBasedSettings, selectedSys):
         """
             record the drone system based key settings
         """
-        self.defaultSysBasedSettings = sysBasedSettings
+        self.defaultSysBasedSettings[selectedSys] = sysBasedSettings
+
+    def getControlSettings(self):
+        """
+            return the default control settings
+        """
+        return self.defaultControlSettings
+    
+    def getFeatureSettings(self, boxType):
+
+        return self.defaultSysBasedSettings[boxType]
+    
+    def getSysBasedSettings(self, selectedSys):
+        """
+            return the drone sys based setting
+        """
+        return self.allSettings[selectedSys]

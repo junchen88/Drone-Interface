@@ -1,8 +1,11 @@
 from PyQt5 import QtCore, QtWidgets
 from ControlSettingWidget import *
 
+SETTING = 'setting'
+HOME = 'home'
 
-def initPage2(self):
+#availableKeys are all the keys that are available to set (letters+digits)
+def initPage2(self, availableKeys, oldControlSetting, yamlHelper, keySettingInfo):
     
     self.page_2 = QtWidgets.QWidget()
     self.page_2.setObjectName("page_2")
@@ -40,7 +43,11 @@ def initPage2(self):
     leftSpacer = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
     self.controlModeSetHorizontalLay.addItem(leftSpacer)
     
-    self.controlSetVerticalLay = ControlSettingWidget(self.page_2).getWidget()
+    self.controlSettingWidget = ControlSettingWidget(self.page_2, availableKeys, SETTING, self.controlHomeSettingWidget, oldControlSetting, yamlHelper=yamlHelper, keySettingInfo=keySettingInfo)
+    self.controlSetVerticalLay = self.controlSettingWidget.getLayout()
+    
+
+    
     self.controlModeSetHorizontalLay.addLayout(self.controlSetVerticalLay)
     
     spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
