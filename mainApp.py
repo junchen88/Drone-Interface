@@ -1,24 +1,31 @@
 import sys
 from Controls import *
 from PyQt5.QtGui import QIcon, QPixmap
+from SettingConfirmPopup import *
+from copy import deepcopy
+from dictionary import *
+from newControlWindowClass import NewControlWindow
 
 HOMEPAGE = 0
 CONTROLPAGE = 1
 SWARMPAGE = 2
 SETTINGPAGE = 3
+STARTCONTROL = "start control"
+STOPCONTROL = "stop control"
 
 class MainApp():
 
     def __init__(self, args):
         self.app = QtWidgets.QApplication(args)
         self.window = QtWidgets.QMainWindow()
-
-        self.ui = Controls(self.window)
-        self.ui.flightDataLabel = QtWidgets.QLabel()
-        self.ui.flightDataLabel.setGeometry(QtCore.QRect(720, 240, 31, 21))
-        self.ui.flightDataLabel.setObjectName("flightDataLabel")
+        self.yamlHelper = YamlHelper()
+        self.keySettingInfo = KeySettingsInfo()
+        self.availableKeys = self.keySettingInfo.getAvailableKeys()
+        self.ui = Controls(self.window, self.yamlHelper, self.keySettingInfo)
+        
+        
         self.createActions(self.window)
-        self.ui.toolBar.addWidget(self.ui.flightDataLabel)
+        
 
 
         self.retranslateUi()
@@ -33,6 +40,7 @@ class MainApp():
 
     #CREATE ACTIONS FOR TOOL BAR
     def createActions(self, mainWindowBase):
+        oldPageNum = self.ui.stackedWidget.currentIndex()
         self.ui.homeAction = QtWidgets.QAction(mainWindowBase)
         self.ui.homeAction.setText("&Home")
         self.ui.homeAction.setIcon(QIcon(QPixmap("./icons/house-icon.webp")))
@@ -59,14 +67,117 @@ class MainApp():
         self.ui.settingAction.triggered.connect(lambda: self.toPage(SETTINGPAGE))
 
 
+        self.ui.flightDataLabel = QtWidgets.QLabel()
+        self.ui.flightDataLabel.setGeometry(QtCore.QRect(720, 240, 31, 21))
+        self.ui.flightDataLabel.setObjectName("flightDataLabel")
+        self.ui.toolBar.addWidget(self.ui.flightDataLabel)
+
+        right_spacer = QtWidgets.QWidget()
+        right_spacer.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.ui.toolBar.addWidget(right_spacer)
+    
+        self.ui.startAction = QtWidgets.QAction(mainWindowBase)
+        self.ui.startAction.setText("&Start Drone Control")
+        self.ui.startAction.setIcon(QIcon(QPixmap("./icons/start-button-icon.png")))
+        self.ui.toolBar.addAction(self.ui.startAction)
+        self.ui.startAction.triggered.connect(self.startControl)
+
+        self.ui.stopAction = QtWidgets.QAction(mainWindowBase)
+        self.ui.stopAction.setText("&Start Drone Control")
+        self.ui.stopAction.setIcon(QIcon(QPixmap("./icons/stop-road-sign-icon.png")))
+        self.ui.toolBar.addAction(self.ui.stopAction)
+        self.ui.stopAction.triggered.connect(self.stopControl)
+        
+
         self.ui.toolBar.setIconSize(QtCore.QSize(48, 48))
         self.ui.toolBar.setStyleSheet("QToolBar{spacing:30px;}")
-    
+
+    def startControl(self):
+        """
+            To start the drone control. Eg. record user pressed key
+        """
+        self.controlWindow = NewControlWindow()
+        self.ui.trackKeyThread.start()
+
+    def stopControl(self):
+        """
+            To stop the drone control. Eg. stop recording user pressed key
+        """
+        self.ui.trackKeyThread.stop()
 
     #REDIRECT PAGE AFTER CLICKING TOOLBAR ICONS
     def toPage(self, pageNumber):
+        oldPageNum = self.ui.stackedWidget.currentIndex()
+        self.keySettingInfo.didUserIgnoreChanges = False #reset user ignore changes flag
 
-        self.ui.stackedWidget.setCurrentIndex(pageNumber)
+        if self.keySettingInfo.hasControlChanged:
+            if self.keySettingInfo.hasSetConfirmClicked:
+
+                self.keySettingInfo.hasSetConfirmClicked = False
+                self.keySettingInfo.hasControlChanged = False
+                self.ui.stackedWidget.setCurrentIndex(pageNumber)
+
+            else:
+                #POP UP MSG SAYING CLICK CONFIRM FIRST
+                messageBox = SettingConfirmPopup(self.window)
+                if messageBox.getResult() == "Ignore Changes":
+                    self.keySettingInfo.didUserIgnoreChanges = True #make ignore changes flag = T so the system won't detect revert keys as changed key
+                    self.keySettingInfo.hasControlChanged = False
+                    conSetting = self.ui.controlSettingWidget
+
+                    oldControlSetting = self.ui.oldControlSetting
+                    conSetting.resetControlToOldSetting(oldControlSetting)
+                    self.keySettingInfo.didUserIgnoreChanges = False #reset ignore changes flag
+
+                    # conSetting.pitchSetFront.setCurrentIndex(availableKeys.index(oldControlSetting[PF])+1)
+                    # conSetting.pitchSetBack.setCurrentIndex(availableKeys.index(oldControlSetting[PB])+1)
+                    # conSetting.rollSetLeft.setCurrentIndex(availableKeys.index(oldControlSetting[RL])+1)
+                    # conSetting.rollSetRight.setCurrentIndex(availableKeys.index(oldControlSetting[RR])+1)
+                    # conSetting.yawSetClockwise.setCurrentIndex(availableKeys.index(oldControlSetting[YC])+1)
+                    # conSetting.yawSetAnticlockwise.setCurrentIndex(availableKeys.index(oldControlSetting[YA])+1)
+                    # conSetting.throttleSetDown.setCurrentIndex(availableKeys.index(oldControlSetting[TD])+1)
+                    # conSetting.throttleSetUp.setCurrentIndex(availableKeys.index(oldControlSetting[TU])+1)
+
+                #GO BACK
+                else:
+                    
+                    pass
+
+
+                print(messageBox.getResult())
+                pass
+        else:
+            self.ui.stackedWidget.setCurrentIndex(pageNumber)
+        
+
+        #IF NOT AT SETTING PAGE BEFORE AND SWITCHES TO SETTING PAGE
+        if oldPageNum != 1 and pageNumber == 1:
+            print(" old page num", oldPageNum)
+            #RECORD OLD SETTINGS
+            self.ui.oldControlSetting.clear()
+
+            temp = self.ui.controlSettingWidget
+            controlSetting = {}
+            controlSetting[PF] = temp.pitchSetFront.currentText()
+            controlSetting[PB] = temp.pitchSetBack.currentText()
+            controlSetting[RL] = temp.rollSetLeft.currentText()
+            controlSetting[RR] = temp.rollSetRight.currentText()
+            controlSetting[YC] = temp.yawSetClockwise.currentText()
+            controlSetting[YA] = temp.yawSetAnticlockwise.currentText()
+            controlSetting[TD] = temp.throttleSetDown.currentText()
+            controlSetting[TU] = temp.throttleSetUp.currentText()
+
+            self.ui.oldControlSetting = controlSetting
+
+            #TODO discard changes for drone features
+
+            # if self.ui.currentSys == 'Betaflight':
+            #     betaFlightSetting = deepcopy(self.ui.groupBoxBeta)
+            #     self.ui.oldControlSetting.append(betaFlightSetting)
+
+            # if self.ui.currentSys == 'Ardupilot':
+            #     arduPilotSetting = deepcopy(self.ui.groupBoxHomeArdu)
+            #     self.ui.oldControlSetting.append(arduPilotSetting)
 
 
 if __name__ == "__main__":
