@@ -14,10 +14,11 @@ GB = "Go Back"
 CONTROLELEMENTSSTR = [PF,PB,RL,RR,TU,TD,YC,YA]
                     
 
-OSD     = "OSD"
-PREARM  = "Pre-arm"
-ARM     = "arm"
-BEEPER  = "Beeper"
+OSD         = "OSD Disable SW"
+PREARM      = "Pre-arm"
+ARM         = "Arm"
+BEEPER      = "Beeper"
+FLIGHTMODE  = "Flight Modes"
 
 SYSBASEDELEMENTSSTR = [OSD, PREARM, ARM, BEEPER]
 ALPHAKEY = ['z', 'x', 'c', 'v', 'b', 'n', 'm']

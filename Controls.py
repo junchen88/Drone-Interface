@@ -10,6 +10,8 @@ from ArdupilotBoxWidget import *
 from initPage2 import *
 from yamlHelper import YamlHelper
 from keySettingClass import KeySettingsInfo
+from sysBasedFeatureSettingWidget import SysBasedFeatureSettingWidget
+from SettingConfirmPopup import SettingConfirmPopup
 
 DEFAULT_MODEL = 'Betaflight'
 MODELSINITDICT = {"Betaflight":False, "Ardupilot":False}
@@ -25,7 +27,7 @@ class Drone_system():
 class Controls(Ui_MainWindow):
     def __init__(self, mainWindowBase, yamlHelper:YamlHelper, keySettingInfo:KeySettingsInfo):
         Ui_MainWindow.setupUi(self, mainWindowBase, yamlHelper, keySettingInfo)
-
+        self.window = mainWindowBase
         self.availableKeys = keySettingInfo.getAvailableKeys()
         self.oldControlSetting = {}   #TO STORE OLD SETTING AND TO REVERT SETTINGS
 
@@ -54,15 +56,20 @@ class Controls(Ui_MainWindow):
 
         self.currentSys = DEFAULT_MODEL
 
+        self.keySettingInfo.getAllComboBox(self.controlSettingWidget, self.getSysClass(self.currentSys))
+
        
 
     #HELPER FUNCTION TO INITIALISE INTERFACE BASED ON DRONE SYSTEM
     def chooseInit(self, model):
         MODELSINITDICT[model] = True
         if model == 'Betaflight':
-            self.betaClass = BetaFlightBoxWidget(self.page_2, self.keySettingInfo, self.yamlHelper)
+            
+            self.groupBoxHome = SysBasedFeatureSettingWidget(self.page, self.keySettingInfo, self.yamlHelper, "Betaflight", HOME)
+            self.groupBoxHomeBeta = self.groupBoxHome.getWidget()
+            self.betaClass = SysBasedFeatureSettingWidget(self.page_2, self.keySettingInfo, self.yamlHelper, "Betaflight", SETTING, self.groupBoxHome)
             self.groupBoxBeta = self.betaClass.getWidget()
-            self.groupBoxHomeBeta = BetaFlightBoxWidget(self.page, self.keySettingInfo, self.yamlHelper).getWidget()
+            
             self.controlModeSetHorizontalLay.addWidget(self.groupBoxBeta)
            
             rightSpacer = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -75,18 +82,22 @@ class Controls(Ui_MainWindow):
             self.homeSettingVerticalLay.addWidget(self.groupBoxHomeBeta)
 
         elif model == 'Ardupilot':
-            self.arduClass = ArdupilotBoxWidget(self.page, self.keySettingInfo)
-            self.groupBoxHomeArdu = self.arduClass.getWidget()
-            self.groupBoxArdu = ArdupilotBoxWidget(self.page_2, self.keySettingInfo).getWidget()
+            groupBoxHome = SysBasedFeatureSettingWidget(self.page, self.keySettingInfo, self.yamlHelper, "Ardupilot", HOME)
+            self.groupBoxHomeArdu = groupBoxHome.getWidget()
+            self.arduClass =SysBasedFeatureSettingWidget(self.page_2, self.keySettingInfo, self.yamlHelper, "Ardupilot", SETTING, groupBoxHome)
+            self.groupBoxArdu = self.arduClass.getWidget()
             self.controlModeSetHorizontalLay.insertWidget(3,self.groupBoxArdu)
             self.homeSettingVerticalLay.insertWidget(1, self.groupBoxHomeArdu)
 
 
+
         else:
             print("Something's wrong - using default system")
-            self.groupBoxBeta = BetaFlightBoxWidget(self.page_2, self.keySettingInfo,self.yamlHelper).getWidget()
-            self.groupBoxHomeBeta = BetaFlightBoxWidget(self.page, self.keySettingInfo, self.yamlHelper).getWidget()
-
+            
+            self.groupBoxHome = SysBasedFeatureSettingWidget(self.page, self.keySettingInfo, self.yamlHelper, "Betaflight", HOME)
+            self.groupBoxHomeBeta = self.groupBoxHome.getWidget()
+            self.betaClass = SysBasedFeatureSettingWidget(self.page_2, self.keySettingInfo,self.yamlHelper, "Betaflight", SETTING, self.groupBoxHome)
+            self.groupBoxBeta = self.betaClass.getWidget()
         
 
     #RETURNS THE INTERFACE BASED ON THE DRONE SYSTEM
@@ -109,24 +120,86 @@ class Controls(Ui_MainWindow):
 
     #FUNCTION FOR CHANGING INTERFACE BASED ON THE DRONE SYSTEM
     #SELECTED - ASSIGNED TO CONFIRM BUTTOM
+    #This is for changing dropdown menu in setting page
     def changeInterfaceBasedOnModel(self):
         currentIndex = self.typeDropDown.currentIndex()
         selectedModel = MODELMAPPING[currentIndex]
-        print(MODELSINITDICT[selectedModel])
 
-        #HIDE CURRENT, SHOW SELECTED SYSTEM INTERFACE
-        currentSysBox = self.getModel(self.currentSys)
-        currentSysBox[0].hide()
-        currentSysBox[1].hide()
+        #if system didn't change, don't do anything
+        if selectedModel == self.currentSys:
+            return
+
+        #if control has changed
+        if self.keySettingInfo.hasControlChanged:
+            
+            #Clicked the confirm button
+            if self.keySettingInfo.hasSetConfirmClicked:
+                self.currentSys = selectedModel
+                self.keySettingInfo.hasSetConfirmClicked = False
+                self.keySettingInfo.hasControlChanged = False
+                
+            
+            else:
+
+                #create pop up msg box if the user didn't click confirm
+                #after changing data
+                #POP UP MSG SAYING CLICK CONFIRM FIRST
+                messageBox = SettingConfirmPopup(self.window)
+                if messageBox.getResult() == "Ignore Changes":
+                    self.keySettingInfo.didUserIgnoreChanges = True #make ignore changes flag = T so the system won't detect revert keys as changed key
+                    self.keySettingInfo.hasControlChanged = False
+                    conSetting = self.controlSettingWidget
+
+                    oldControlSetting = self.oldControlSetting
+                    conSetting.resetControlToOldSetting(oldControlSetting)
+
+                    featureWidgetClass = self.getSysClass(self.currentSys)
+
+                    featureWidgetClass.resetFeatureToOldSetting(oldControlSetting)
+                    self.keySettingInfo.didUserIgnoreChanges = False #reset ignore changes flag
+
+                    #convert dropdown element back to changed value
+                    for i, value in enumerate(MODELMAPPING):
+                        if value == self.currentSys:
+                            self.typeDropDown.setCurrentIndex(i)
+                            break
+
+                #GO BACK
+                else:
+                    
+                    pass
+
+
+                print(messageBox.getResult())
+                pass
+
+        else:
+            #HIDE CURRENT, SHOW SELECTED SYSTEM INTERFACE
+            currentSysBox = self.getModel(self.currentSys)
+            currentSysBox[0].hide()
+            currentSysBox[1].hide()
+            self.currentSys = selectedModel
+
+
+
+            #TODO reduce code by creating common code
+
+            if not MODELSINITDICT[selectedModel]:
+                #INITIALISE IF IT IS NOT INITIALISED
+                self.chooseInit(selectedModel)
+
+            newSysBox = self.getModel(selectedModel)
+            newSysBox[0].show()
+            newSysBox[1].show()
+
+            #Read feature keys
+            #--------------------------------------
+            featureWidgetClass = self.getSysClass(self.currentSys)
         
-        if not MODELSINITDICT[selectedModel]:
-            #INITIALISE IF IT IS NOT INITIALISED
-            self.chooseInit(selectedModel)
-
-        newSysBox = self.getModel(selectedModel)
-        newSysBox[0].show()
-        newSysBox[1].show()
-        self.currentSys = selectedModel
+            for key,value in featureWidgetClass.dictOfComboBox.items():
+                comboBox = value.getComboBox()
+                self.oldControlSetting[key] = comboBox.currentText()
+            #------------------------------------------
         
 
 

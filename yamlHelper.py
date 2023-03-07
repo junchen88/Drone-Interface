@@ -77,12 +77,25 @@ class YamlHelper():
         """
         return self.defaultControlSettings
     
-    def getFeatureSettings(self, boxType):
+    def getFeatureSettings(self, sysType):
+        """
+            return the default feature settings
+            for sysType based drone system
+        """
 
-        return self.defaultSysBasedSettings[boxType]
-    
+        #tries to get the information
+        try:
+            return self.defaultSysBasedSettings[sysType]
+
+        except:
+            return {}
+
     def getSysBasedSettings(self, selectedSys):
         """
             return the drone sys based setting
         """
-        return self.allSettings[selectedSys]
+        #tries to get the information
+        try:
+            return self.allSettings[selectedSys]
+        except:
+            return {}

@@ -22,12 +22,9 @@ class MainApp():
         self.keySettingInfo = KeySettingsInfo()
         self.availableKeys = self.keySettingInfo.getAvailableKeys()
         self.ui = Controls(self.window, self.yamlHelper, self.keySettingInfo)
-        
-        
+           
         self.createActions(self.window)
         
-
-
         self.retranslateUi()
         self.window.show()
         sys.exit(self.app.exec_())
@@ -123,20 +120,25 @@ class MainApp():
                 if messageBox.getResult() == "Ignore Changes":
                     self.keySettingInfo.didUserIgnoreChanges = True #make ignore changes flag = T so the system won't detect revert keys as changed key
                     self.keySettingInfo.hasControlChanged = False
+                    
+                    #reset control setting to old setting (previously saved setting)
+                    #-----------------------------------------------------------
                     conSetting = self.ui.controlSettingWidget
 
                     oldControlSetting = self.ui.oldControlSetting
                     conSetting.resetControlToOldSetting(oldControlSetting)
-                    self.keySettingInfo.didUserIgnoreChanges = False #reset ignore changes flag
+                    #-----------------------------------------------------------
 
-                    # conSetting.pitchSetFront.setCurrentIndex(availableKeys.index(oldControlSetting[PF])+1)
-                    # conSetting.pitchSetBack.setCurrentIndex(availableKeys.index(oldControlSetting[PB])+1)
-                    # conSetting.rollSetLeft.setCurrentIndex(availableKeys.index(oldControlSetting[RL])+1)
-                    # conSetting.rollSetRight.setCurrentIndex(availableKeys.index(oldControlSetting[RR])+1)
-                    # conSetting.yawSetClockwise.setCurrentIndex(availableKeys.index(oldControlSetting[YC])+1)
-                    # conSetting.yawSetAnticlockwise.setCurrentIndex(availableKeys.index(oldControlSetting[YA])+1)
-                    # conSetting.throttleSetDown.setCurrentIndex(availableKeys.index(oldControlSetting[TD])+1)
-                    # conSetting.throttleSetUp.setCurrentIndex(availableKeys.index(oldControlSetting[TU])+1)
+                    #reset current drone system based feature key assignment setting
+                    #to old previously saved setting
+                    #-----------------------------------------------------------
+                    currentSys = self.ui.currentSys
+                    featureWidgetClass = self.ui.getSysClass(currentSys)
+
+                    featureWidgetClass.resetFeatureToOldSetting(oldControlSetting)
+                    #-----------------------------------------------------------
+                    
+                    self.keySettingInfo.didUserIgnoreChanges = False #reset ignore changes flag
 
                 #GO BACK
                 else:
@@ -153,7 +155,7 @@ class MainApp():
         #IF NOT AT SETTING PAGE BEFORE AND SWITCHES TO SETTING PAGE
         if oldPageNum != 1 and pageNumber == 1:
             print(" old page num", oldPageNum)
-            #RECORD OLD SETTINGS
+            #RECORD OLD SETTINGS WHEN WE ARRIVED IN THE SETTING PAGE
             self.ui.oldControlSetting.clear()
 
             temp = self.ui.controlSettingWidget
@@ -167,17 +169,17 @@ class MainApp():
             controlSetting[TD] = temp.throttleSetDown.currentText()
             controlSetting[TU] = temp.throttleSetUp.currentText()
 
-            self.ui.oldControlSetting = controlSetting
+            #record feature key settings
+            #----------------------------------------------------------
+            currentSys = self.ui.currentSys
+            featureWidgetClass = self.ui.getSysClass(currentSys)
+            
+            for key,value in featureWidgetClass.dictOfComboBox.items():
+                comboBox = value.getComboBox()
+                controlSetting[key] = comboBox.currentText()
+            #-----------------------------------------------------------
 
-            #TODO discard changes for drone features
-
-            # if self.ui.currentSys == 'Betaflight':
-            #     betaFlightSetting = deepcopy(self.ui.groupBoxBeta)
-            #     self.ui.oldControlSetting.append(betaFlightSetting)
-
-            # if self.ui.currentSys == 'Ardupilot':
-            #     arduPilotSetting = deepcopy(self.ui.groupBoxHomeArdu)
-            #     self.ui.oldControlSetting.append(arduPilotSetting)
+            self.ui.oldControlSetting = controlSetting #TODO change this here to keysetting info
 
 
 if __name__ == "__main__":

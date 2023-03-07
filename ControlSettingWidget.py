@@ -124,12 +124,13 @@ class ControlSettingWidget(QtWidgets.QWidget):
 
         #CLEAR THE HOME CONTROL COMBO BOX CONTENT
         currentHomeComboBox = self.getRelevantComboBox(boxType, homeWidget)
+        currentComboBox = self.getRelevantComboBox(boxType)
 
         if currentData:
 
-            oldFunc = self.keySettingInfo.recordUsedKeys(currentData, boxType)
+            oldFunc = self.keySettingInfo.recordUsedKeys(currentData, boxType, currentComboBox)
             if oldFunc is not None:
-                oldComboBox = self.getRelevantComboBox(oldFunc)
+                oldComboBox = self.keySettingInfo.getComboBox(oldFunc)
                 if isinstance(oldComboBox, str):
                     #PRINT OUT ERROR HERE?
                     #IGNORE 
@@ -272,7 +273,7 @@ class ControlSettingWidget(QtWidgets.QWidget):
         self.yawSetAnticlockwise.setCurrentIndex(19+1) #SET AS j
 
 
-        self.keySettingInfo.recordAppDefaultControlKeys()
+        self.keySettingInfo.recordAppDefaultControlKeys(self.getAllComboBoxes())
 
         
     def clearControlKeys(self):
@@ -300,7 +301,9 @@ class ControlSettingWidget(QtWidgets.QWidget):
             listOfUserKeys = controlDefaults.keys()
             #for each default key
             for userKey in listOfUserKeys:
-                oldFunc = self.keySettingInfo.recordUsedKeys(userKey, controlDefaults[userKey])
+                funcName = controlDefaults[userKey]
+                currentComboBox = self.getRelevantComboBox(funcName)
+                oldFunc = self.keySettingInfo.recordUsedKeys(userKey, funcName, currentComboBox)
 
                 #controlDefault store the key as key and value as the combo box type string
                 #available keys are empty string + letters + digits
@@ -349,8 +352,12 @@ class ControlSettingWidget(QtWidgets.QWidget):
             if isinstance(element, str):
                 raise Exception("element doesn't exist")
 
-            element.setCurrentIndex(availableKeys.index(oldAssignedKey)+1)
-            self.keySettingInfo.recordUsedKeys(oldAssignedKey, boxType)
+            index = -1
+            if oldAssignedKey != "":
+
+                index = availableKeys.index(oldAssignedKey)
+            element.setCurrentIndex(index+1)
+            self.keySettingInfo.recordUsedKeys(oldAssignedKey, boxType, element)
 
                         
     def getCurrentControls(self):
@@ -367,3 +374,18 @@ class ControlSettingWidget(QtWidgets.QWidget):
         controlSetting[TD] = self.throttleSetDown.currentText()
         controlSetting[TU] = self.throttleSetUp.currentText()
         return controlSetting
+
+    def getAllComboBoxes(self):
+        """
+            returns the all the control combo box
+        """
+        comboBoxDict = {}
+        comboBoxDict[PF] = self.pitchSetFront
+        comboBoxDict[PB] = self.pitchSetBack
+        comboBoxDict[RL] = self.rollSetLeft
+        comboBoxDict[RR] = self.rollSetRight
+        comboBoxDict[YC] = self.yawSetClockwise
+        comboBoxDict[YA] = self.yawSetAnticlockwise
+        comboBoxDict[TD] = self.throttleSetDown
+        comboBoxDict[TU] = self.throttleSetUp
+        return comboBoxDict
