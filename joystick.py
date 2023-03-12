@@ -116,22 +116,69 @@ class Joystick(QWidget):
 
 
 class JoystickWidget(QWidget):
-    def __init__(self, name):
+    def __init__(self, name:str):
         self.joystickComponent = Joystick()
         self.joystickLayout = QVBoxLayout()
-        self.joystickLayout.setObjectName("joystickLayout")
+        self.joystickLayout.setObjectName(f"joystickLayout-{name}")
         spacerItem = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.joystickLayout.addItem(spacerItem)
         self.joystickLabel = QLabel(f"{name} Joystick")
         self.joystickLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.joystickLabel.setObjectName(f"joystickLabel-{name}")
         self.joystickLayout.addWidget(self.joystickLabel)
-        self.joystickLayout.addWidget(self.joystickComponent)
+        self.joystickHorizontalLayout = QHBoxLayout()
+        self.joystickHorizontalLayout.setObjectName(f"joystickHorizontalLayout-{name}")
+
+        #left joy
+        if name.lower() == "left":
+            self.joystickThrottleUpLabel = QLabel("Throttle Up")
+            self.joystickThrottleDownLabel = QLabel("Throttle Down")
+            self.joystickThrottleUpLabel.setAlignment(QtCore.Qt.AlignCenter)
+            self.joystickThrottleDownLabel.setAlignment(QtCore.Qt.AlignCenter)
+
+
+
+            self.joystickLayout.addWidget(self.joystickThrottleUpLabel)
+            self.joystickYawLeftLabel = QLabel("Yaw Left")
+            self.joystickYawRightLabel = QLabel("Yaw Right")
+
+            
+            self.joystickHorizontalLayout.addWidget(self.joystickYawLeftLabel)
+
+            self.joystickHorizontalLayout.addWidget(self.joystickComponent)
+            self.joystickHorizontalLayout.addWidget(self.joystickYawRightLabel)
+
+            self.joystickLayout.addLayout(self.joystickHorizontalLayout)
+
+            self.joystickLayout.addWidget(self.joystickThrottleDownLabel)
+
+
+        #right joy
+        elif name.lower() == "right":
+            self.joystickPitchForwardLabel = QLabel("Pitch Forward")
+            self.joystickPitchBackwardLabel = QLabel("Pitch Backward")
+            self.joystickPitchForwardLabel.setAlignment(QtCore.Qt.AlignCenter)
+            self.joystickPitchBackwardLabel.setAlignment(QtCore.Qt.AlignCenter)
+
+            self.joystickLayout.addWidget(self.joystickPitchForwardLabel)
+            self.joystickRollLeftLabel = QLabel("Roll Left")
+            self.joystickRollRightLabel = QLabel("Roll Right")
+
+            self.joystickHorizontalLayout.addWidget(self.joystickRollLeftLabel)
+
+            self.joystickHorizontalLayout.addWidget(self.joystickComponent)
+            self.joystickHorizontalLayout.addWidget(self.joystickRollRightLabel)
+
+            self.joystickLayout.addLayout(self.joystickHorizontalLayout)
+
+            self.joystickLayout.addWidget(self.joystickPitchBackwardLabel)
+
+
 
         #add checkbox & use spacer to center checkbox
         #------------------------------------------------------------
         self.joystickCheckBox = QCheckBox("Reset To Centre")
-        self.joystickCheckBox.setObjectName("joystickCheckBox")
+        self.joystickCheckBox.setObjectName(f"joystickCheckBox-{name}")
         self.checkBoxHozLayout = QHBoxLayout()
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum,)
         self.checkBoxHozLayout.addItem(spacerItem)
@@ -140,6 +187,7 @@ class JoystickWidget(QWidget):
         self.checkBoxHozLayout.addItem(spacerItem)
         self.joystickLayout.addLayout(self.checkBoxHozLayout)
 
+
         self.joystickCheckBox.stateChanged.connect(lambda x: self.updateJoystickResetFlag())
         #---------------------------------------------------------------
 
@@ -147,34 +195,16 @@ class JoystickWidget(QWidget):
         spacerItem = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.joystickLayout.addItem(spacerItem)
 
+        #Spacing Layout
+        self.joystickLayout.setStretch(0,2)
+        self.joystickLayout.setStretch(1,2)
+        self.joystickLayout.setStretch(6,2)
+
+
     def getJoystickLayout(self):
         return self.joystickLayout
     
     def updateJoystickResetFlag(self):
         self.joystickComponent.changeResetFlag(self.joystickCheckBox.isChecked())
         self.joystickComponent.recenterJoystick()
-# if __name__ == '__main__':
-#     # Create main application window
-#     app = QApplication([])
-#     app.setStyle(QStyleFactory.create("Cleanlooks"))
-#     mw = QMainWindow()
-#     mw.setWindowTitle('Joystick example')
-
-#     # Create and set widget layout
-#     # Main widget container
-#     cw = QWidget()
-#     ml = QGridLayout()
-#     cw.setLayout(ml)
-#     mw.setCentralWidget(cw)
-
-#     # Create joystick 
-#     joystick = JoystickWidget()
-
-#     # ml.addLayout(joystick.get_joystick_layout(),0,0)
-#     ml.addLayout(joystick.getJoystickLayout(),0,0)
-
-#     mw.show()
-
-#     ## Start Qt event loop unless running in interactive mode or using pyside.
-#     if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
-        # QApplication.instance().exec_()
+        
