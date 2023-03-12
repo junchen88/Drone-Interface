@@ -9,40 +9,55 @@ class Joystick(QWidget):
         self.resetFlag = False
         super(Joystick, self).__init__(parent)
         self.setMinimumSize(100, 100)
-        self.movingOffset = QPointF(0, 0)
-        self.grabCenter = False
+        self.offsetFromTopLeft = QPointF(0, 0)
+        self.grabHandle = False
         self.__maxDistance = 50
-        self.oldOffset = QPointF(0,0)
 
     def paintEvent(self, event):
+        """
+            Called by update() function to update the drawing
+        """
         painter = QPainter(self)
         bounds = QRectF(-self.__maxDistance, -self.__maxDistance, self.__maxDistance * 2, self.__maxDistance * 2).translated(self._center())
         painter.drawEllipse(bounds)
         painter.setBrush(Qt.blue)
-        painter.drawEllipse(self._centerEllipse())
+        painter.drawEllipse(self._ellipseHandle())
 
-    def _centerEllipse(self):
+    def _ellipseHandle(self):
+        """
+            Gets the dimension and location of the ellipse
+        """
 
-        if self.movingOffset == QPointF(0, 0):
+        if self.offsetFromTopLeft == QPointF(0, 0):
             return QRectF(-20, -20, 40, 40).translated(self._center())
 
-        return QRectF(-20, -20, 40, 40).translated(self.movingOffset)
+        return QRectF(-20, -20, 40, 40).translated(self.offsetFromTopLeft)
         
 
     def _center(self):
+        """
+            Gets the joystick circle center
+        """
         return QPointF(self.width()/2, self.height()/2)
 
 
     def _boundJoystick(self, point):
+        """
+            limits the joystick boundary
+        """
         limitLine = QLineF(self._center(), point)
         if (limitLine.length() > self.__maxDistance):
             limitLine.setLength(self.__maxDistance)
         return limitLine.p2()
 
     def joystickDirection(self):
-        if not self.grabCenter:
+        """
+            Gets the current joystick direction in terms of
+            horizontal and vertical axis
+        """
+        if not self.grabHandle:
             return "User did not drag or click the joystick handle"
-        norm = QLineF(self._center(), self.movingOffset)
+        norm = QLineF(self._center(), self.offsetFromTopLeft)
         currentDistanceX = norm.dx()
         currentDistanceY = norm.dy()
 
@@ -53,26 +68,51 @@ class Joystick(QWidget):
 
 
     def mousePressEvent(self, event):
-        self.grabCenter = self._centerEllipse().contains(event.pos())
+        """
+            Change grab handle flag status depending on
+            whether the users have clicked on the handle
+        """
+        self.grabHandle = self._ellipseHandle().contains(event.pos())
         return super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event):
+        """
+            Recenter the joystick handle when users release
+            the handle and if the reset check box is selected
+        """
         if self.resetFlag == True:
-            self.grabCenter = False
-
-            self.movingOffset = self._center()
-            self.update()
-            print("reset to original pos")
+            self.recenterJoystick()
 
     def mouseMoveEvent(self, event):
-        if self.grabCenter:
+        """
+            To track the movement of mouse while
+            dragging the joystick handle
+        """
+        if self.grabHandle:
             print("Moving")
-            self.movingOffset = self._boundJoystick(event.pos())
-            self.update()
+            self.offsetFromTopLeft = self._boundJoystick(event.pos())
+            self.update() #redraw joystick
+            print(self.joystickDirection())
 
 
     def changeResetFlag(self, status):
+        """
+            To change the flag indicating whether to reset
+            joystick handle
+        """
         self.resetFlag = status
+
+    def recenterJoystick(self):
+        """
+            To recenter the joystick handle
+        """
+        self.grabHandle = False
+
+        self.offsetFromTopLeft = self._center()
+        self.update() #redraw joystick
+        print("reset to original pos")
+        print(self.joystickDirection())
+
 
 
 class JoystickWidget(QWidget):
@@ -112,7 +152,7 @@ class JoystickWidget(QWidget):
     
     def updateJoystickResetFlag(self):
         self.joystickComponent.changeResetFlag(self.joystickCheckBox.isChecked())
-
+        self.joystickComponent.recenterJoystick()
 # if __name__ == '__main__':
 #     # Create main application window
 #     app = QApplication([])
