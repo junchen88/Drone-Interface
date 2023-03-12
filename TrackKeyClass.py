@@ -2,14 +2,25 @@ from pynput import keyboard
 
 class TrackKeyClass():
     
-    def __init__(self, keySettings=None):
+    def __init__(self, keySettingInfo=None):
         self.isTracking = False
-        self.keySettings = keySettings
+        self.keySettingInfo = keySettingInfo
 
     def on_press(self, key):
+        """
+            On key press
+        """
+        currentControlSetting = self.keySettingInfo.getUpdateControlSetting()
+        control = None
         try:
-            print('alphanumeric key {0} pressed'.format(
-                key.char))
+            print(key.char)
+            control = currentControlSetting[key.char] #TODO prob for special key like ctrl
+        
+        except Exception as e:
+            control = "not set!"
+            
+        try:
+            print(f'alphanumeric key {key.char} pressed, function = {control}')
             #TODO check for key here and do work
         except AttributeError:
             print('special key {0} pressed'.format(

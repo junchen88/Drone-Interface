@@ -18,7 +18,7 @@ class NewControlWindow():
         self.controlWindowHorizontalLay = QtWidgets.QHBoxLayout()
         self.controlWindowHorizontalLay.setObjectName("controlWindowHorizontalLay")
         
-        self.joystickGrid = QtWidgets.QGridLayout(self.centralwidget)
+        self.joystickGrid = QtWidgets.QGridLayout()
         self.joystickGrid.setObjectName("joystickGrid")
 
 

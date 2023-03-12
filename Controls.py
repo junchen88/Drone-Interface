@@ -46,7 +46,7 @@ class Controls(Ui_MainWindow):
         self.camThread.start()
         #------------------------------------------------------------------
 
-        self.trackKeyThread = TrackKeyClass.TrackKeyClass()
+        self.trackKeyThread = TrackKeyClass.TrackKeyClass(keySettingInfo)
         initPage2(self, self.availableKeys, self.oldControlSetting, yamlHelper, keySettingInfo)
         
         self.yamlHelper = yamlHelper
@@ -219,7 +219,7 @@ class Controls(Ui_MainWindow):
         #----------------------------------------------------------------------
 
         currentSysBasedSettings = currentSysClass.getCurrentSettings()
-
+        self.keySettingInfo.setUpdateControlSetting(currentControlSettings) #record the updated control setting
         self.yamlHelper.setSysBasedSettings(currentSysBasedSettings, currentSelectedSys)
         self.yamlHelper.setControlSettings(currentControlSettings)
         self.yamlHelper.writeSettings(selectedModel)

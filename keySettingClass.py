@@ -10,20 +10,38 @@ class KeySettingsInfo():
     """
     def __init__(self):
         
-        self.usedKeys = {}
-        self.defaultControlKeyAsKey = {}
-        self.defaultSysBasedKeyAsKey = {}
-        self.isUserSetDefault = False
-        self.didUserIgnoreChanges = False
-        self.hasControlChanged = False
-        self.hasSetConfirmClicked = False
-        self.isUserSetDefaultFeature = {}
+        self.usedKeys = {} #to store the used keys
+        self.defaultControlKeyAsKey = {} #to store the default control setting when we first load the app
+        self.defaultSysBasedKeyAsKey = {} #to store the default sys based feature setting when we first load the app
+        self.isUserSetDefault = False #flag to indicate whether the default setting is set by the user or not
+        self.didUserIgnoreChanges = False #flag to indicate whether users have ignore new changes in the setting page
+        self.hasControlChanged = False #flag to indicate whether settings have been changed or not in the setting [age]
+        self.hasSetConfirmClicked = False #flag to indicate whetehr users have clicked save setting button
+        self.isUserSetDefaultFeature = {} #dict containing flag for different drone system based feature setting to indicate whether the default setting is set by the user or not
 
         self.allSettingComboBox = {}
 
+        self.updatedControlSetting = {}
         letters = string.ascii_lowercase
         digits = string.digits
         self.availableKeys = digits + letters 
+
+    def setUpdateControlSetting(self, currentControlSettings):
+        """
+            To record the updated key control setting
+        """
+        self.updatedControlSetting = {y: x for x, y in currentControlSettings.items()}
+
+    def getUpdateControlSetting(self):
+        """
+            Return first load up control setting if user didn't
+            changed the settings or return the updated settings
+        """
+        if self.updatedControlSetting:
+            return self.updatedControlSetting
+        
+        else:
+            return self.defaultControlKeyAsKey
 
     def convertToKeyboardAsKey(self, defaultKeysFromYaml):
         """
