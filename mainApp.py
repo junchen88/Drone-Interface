@@ -94,7 +94,7 @@ class MainApp():
             To start the drone control. Eg. record user pressed key
         """
         self.controlWindow = NewControlWindow()
-        self.ui.trackKeyThread.start()
+        self.ui.trackKeyThread.start(self.controlWindow)
 
     def stopControl(self):
         """

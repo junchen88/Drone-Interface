@@ -5,7 +5,11 @@ from PyQt5 import QtCore
 
 
 class Joystick(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, x, y, parent=None):
+        self.xControl = x
+        self.xControlValue = x
+        self.yControl = y
+        self.yControlValue = y
         self.resetFlag = False
         super(Joystick, self).__init__(parent)
         self.setMinimumSize(100, 100)
@@ -29,6 +33,7 @@ class Joystick(QWidget):
         """
 
         if self.offsetFromTopLeft == QPointF(0, 0):
+            self.offsetFromTopLeft = self._center()
             return QRectF(-20, -20, 40, 40).translated(self._center())
 
         return QRectF(-20, -20, 40, 40).translated(self.offsetFromTopLeft)
@@ -63,7 +68,8 @@ class Joystick(QWidget):
 
         distanceX = min(currentDistanceX / self.__maxDistance, 1.0)
         distanceY = min(currentDistanceY / self.__maxDistance, 1.0)
-
+        self.xControl = distanceX
+        self.yControl = distanceY
         return ({"x":distanceX, "y":-distanceY})
 
 
@@ -113,13 +119,38 @@ class Joystick(QWidget):
         print("reset to original pos")
         print(self.joystickDirection())
 
+    def moveJoystick(self, action, posOrNeg):
+        if self.xControl == action:
+            
+            self.offsetFromTopLeft.setX(self.offsetFromTopLeft.x() + posOrNeg*0.1*self.width())
+            self.offsetFromTopLeft = self._boundJoystick(self.offsetFromTopLeft)
+
+        elif self.yControl == action:
+            
+            # We use negative here since the qpainter class moving down is positive
+            self.offsetFromTopLeft.setY(self.offsetFromTopLeft.y() + -posOrNeg*0.1*self.height())
+            self.offsetFromTopLeft = self._boundJoystick(self.offsetFromTopLeft)
+        
+        self.update() #redraw joystick
+
+
 
 
 class JoystickWidget(QWidget):
-    def __init__(self, name:str):
-        self.joystickComponent = Joystick()
+    def __init__(self, name:str, parent=None):
+        super(JoystickWidget, self).__init__(parent)
+        if name.lower() == "left":
+
+            self.joystickComponent = Joystick(x="Yaw", y="Throttle")
+
+        elif name.lower() == "right":
+            self.joystickComponent = Joystick(x="Roll", y="Pitch")
+
+        self.joystickComponent.setObjectName(f"joystick-{name}")
         self.joystickLayout = QVBoxLayout()
         self.joystickLayout.setObjectName(f"joystickLayout-{name}")
+        self.setLayout(self.joystickLayout)
+
         spacerItem = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.joystickLayout.addItem(spacerItem)
         self.joystickLabel = QLabel(f"{name} Joystick")
@@ -129,8 +160,10 @@ class JoystickWidget(QWidget):
         self.joystickHorizontalLayout = QHBoxLayout()
         self.joystickHorizontalLayout.setObjectName(f"joystickHorizontalLayout-{name}")
 
+
         #left joy
         if name.lower() == "left":
+            self.keyActions = {"Throttle":0,"Yaw":0}
             self.joystickThrottleUpLabel = QLabel("Throttle Up")
             self.joystickThrottleDownLabel = QLabel("Throttle Down")
             self.joystickThrottleUpLabel.setAlignment(QtCore.Qt.AlignCenter)
@@ -155,6 +188,8 @@ class JoystickWidget(QWidget):
 
         #right joy
         elif name.lower() == "right":
+            self.keyActions = {"Pitch":0,"Roll":0}
+
             self.joystickPitchForwardLabel = QLabel("Pitch Forward")
             self.joystickPitchBackwardLabel = QLabel("Pitch Backward")
             self.joystickPitchForwardLabel.setAlignment(QtCore.Qt.AlignCenter)
@@ -180,6 +215,7 @@ class JoystickWidget(QWidget):
         self.joystickCheckBox = QCheckBox("Reset To Centre")
         self.joystickCheckBox.setObjectName(f"joystickCheckBox-{name}")
         self.checkBoxHozLayout = QHBoxLayout()
+        self.checkBoxHozLayout.setObjectName("checkbox horizontal layout")
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum,)
         self.checkBoxHozLayout.addItem(spacerItem)
         self.checkBoxHozLayout.addWidget(self.joystickCheckBox)
@@ -207,4 +243,54 @@ class JoystickWidget(QWidget):
     def updateJoystickResetFlag(self):
         self.joystickComponent.changeResetFlag(self.joystickCheckBox.isChecked())
         self.joystickComponent.recenterJoystick()
+
         
+    def moveJoystick(self, action:str):
+        
+        try:
+            isPositive = False
+            for key in self.keyActions.keys():
+                #check for substring
+                if key.casefold() in action.casefold():
+                    posOrNeg = -1
+                    if "anticlockwise" in action.casefold():
+                        self.keyActions[key] -= 10
+
+                        #check for boundary
+                        if abs(self.keyActions[key]) > 100:
+                            self.keyActions[key] = 100 if self.keyActions[key] > 0 else -100
+
+                        self.joystickComponent.moveJoystick(key, posOrNeg)
+                        print({key:self.keyActions[key]})
+                        break
+
+
+                    #check for +ve keyword
+                    for posDirectionKeyWord in ["up", "forward", "right", "clockwise"]:
+                        if posDirectionKeyWord in action.casefold():
+                            isPositive = True
+                            print(key)
+                            self.keyActions[key] += 10
+                            posOrNeg = 1
+                            break
+
+                    if isPositive == False:
+                        posOrNeg = -1
+                        self.keyActions[key] -= 10
+
+
+                    #check for boundary
+                    if abs(self.keyActions[key]) > 100:
+                        self.keyActions[key] = 100 if self.keyActions[key] > 0 else -100
+
+                    self.joystickComponent.moveJoystick(key, posOrNeg)
+                    print({key:self.keyActions[key]}) #TODO sent this value to Zehui interface
+
+                    break #break out of outer for loop
+                    
+                    
+
+            
+        except Exception as e:
+            print(e)
+            return None

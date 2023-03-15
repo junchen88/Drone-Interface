@@ -21,13 +21,15 @@ class NewControlWindow():
         self.joystickGrid = QtWidgets.QGridLayout()
         self.joystickGrid.setObjectName("joystickGrid")
 
+        self.joystickWidgetLeft = JoystickWidget("Left")
+        self.joystickWidgetRight = JoystickWidget("Right")
+        self.joystickWidgetLeft.setObjectName("left-joystick-widget")
+        self.joystickWidgetRight.setObjectName("right-joystick-widget")
 
-        self.joystickWidgetLeftLayout = JoystickWidget("Left").getJoystickLayout()
-        self.joystickWidgetRightLayout = JoystickWidget("Right").getJoystickLayout()
 
+        self.joystickGrid.addWidget(self.joystickWidgetLeft,1,0,1,1)
+        self.joystickGrid.addWidget(self.joystickWidgetRight,1,1,1,1)
 
-        self.joystickGrid.addLayout(self.joystickWidgetLeftLayout,1,0,1,1)
-        self.joystickGrid.addLayout(self.joystickWidgetRightLayout,1,1,1,1)
         
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.centralWidgetGrid.addItem(spacerItem, 0,0,1,1)

@@ -1,10 +1,13 @@
 from pynput import keyboard
+from newControlWindowClass import NewControlWindow
+import PyQt5.QtWidgets as QtWidgets
 
 class TrackKeyClass():
     
     def __init__(self, keySettingInfo=None):
         self.isTracking = False
         self.keySettingInfo = keySettingInfo
+        self.controlWindow = None
 
     def on_press(self, key):
         """
@@ -21,7 +24,14 @@ class TrackKeyClass():
             
         try:
             print(f'alphanumeric key {key.char} pressed, function = {control}')
-            #TODO check for key here and do work
+
+            #TODO call function here to move joystick
+            joystickLeft = self.controlWindow.centralwidget.findChild(QtWidgets.QWidget, "left-joystick-widget")
+            joystickLeft.moveJoystick(control)
+
+            joystickRight = self.controlWindow.centralwidget.findChild(QtWidgets.QWidget, "right-joystick-widget")
+            joystickRight.moveJoystick(control)
+
         except AttributeError:
             print('special key {0} pressed'.format(
                 key))
@@ -33,12 +43,14 @@ class TrackKeyClass():
             # Stop listener
             return False
 
-    def start(self):
+    def start(self, controlWindow:NewControlWindow):
         self.isTracking = True
         self.listener = keyboard.Listener(
             on_press=self.on_press,
             on_release=self.on_release)
         self.listener.start()
+
+        self.controlWindow = controlWindow #create new control window
 
     def stop(self):
         self.isTracking = False
