@@ -5,7 +5,7 @@ from PyQt5 import QtCore
 
 
 class Joystick(QWidget):
-    def __init__(self, x, y, parent=None):
+    def __init__(self, x, y, joystickXControlLabel, joystickYControlLabel, parent=None):
         self.xControl = x
         self.xControlValue = x
         self.yControl = y
@@ -16,6 +16,8 @@ class Joystick(QWidget):
         self.offsetFromTopLeft = QPointF(0, 0)
         self.grabHandle = False
         self.__maxDistance = 50
+        self.joystickXControlLabel = joystickXControlLabel
+        self.joystickYControlLabel = joystickYControlLabel
 
     def paintEvent(self, event):
         """
@@ -58,6 +60,21 @@ class Joystick(QWidget):
             limitLine.setLength(self.__maxDistance)
         return limitLine.p2()
 
+    def setControlLabel(self, joystickDir):
+        #To update the label showing the current control value
+        #-----------------------------------------------------------------
+        if joystickDir is not None and not isinstance(joystickDir,str):
+            xControl = self.xControl
+            yControl = self.yControl
+            
+            yValue = joystickDir[yControl]*100
+            self.joystickYControlLabel.setText(f"{yControl}: {yValue}%")
+
+            xValue = joystickDir[xControl]*100
+            self.joystickXControlLabel.setText(f"{xControl}: {xValue}%")
+        #-----------------------------------------------------------------
+
+    #TODO sent data to interface here
     def joystickDirection(self, moveByKey = False):
         """
             Gets the current joystick direction in terms of
@@ -87,7 +104,11 @@ class Joystick(QWidget):
                 
                 if roundedX == -0.0:
                     roundedX = 0.0
-                return ({self.xControl:roundedX, self.yControl:roundedY})
+
+                joystickDir = {self.xControl:roundedX, self.yControl:roundedY}
+                self.setControlLabel(joystickDir)
+
+                return joystickDir
 
                 
         
@@ -100,8 +121,20 @@ class Joystick(QWidget):
         self.xControlValue = distanceX
         self.yControlValue = distanceY
                 
-        #round value 1 d.p. here
-        return ({self.xControl:round(distanceX,1), self.yControl:-round(distanceY,1)})
+        #round value to 1 d.p. here
+        roundedX = round(distanceX,1)
+        roundedY = -round(distanceY,1)
+
+        #check for correct signage here
+        if roundedY == -0.0:
+            roundedY = 0.0
+        
+        if roundedX == -0.0:
+            roundedX = 0.0
+
+        joystickDir = {self.xControl:roundedX, self.yControl:roundedY}
+        self.setControlLabel(joystickDir)
+        return joystickDir
 
 
     def mousePressEvent(self, event):
@@ -168,12 +201,13 @@ class Joystick(QWidget):
                 posOrNeg = -1
                 break
         #---------------------------------------------------------
-
+        joystickDir = None
         #check for x axis control
         if self.xControl.casefold() in action.casefold():
             self.offsetFromTopLeft.setX(self.offsetFromTopLeft.x() + posOrNeg*0.1*self.width()/2)
             self.offsetFromTopLeft = self._boundJoystick(self.offsetFromTopLeft)
-            print(self.joystickDirection(moveByKey=True))
+            joystickDir = self.joystickDirection(moveByKey=True)
+            print(joystickDir)
             self.update() #redraw joystick
 
         #check for y axis control
@@ -182,8 +216,11 @@ class Joystick(QWidget):
             # We use negative here since the qpainter class moving down is positive
             self.offsetFromTopLeft.setY(self.offsetFromTopLeft.y() + -posOrNeg*0.1*self.height()/2)
             self.offsetFromTopLeft = self._boundJoystick(self.offsetFromTopLeft)
-            print(self.joystickDirection(moveByKey=True))
+            joystickDir = self.joystickDirection(moveByKey=True)
+            print(joystickDir)            
             self.update() #redraw joystick
+        
+        
 
 
 
@@ -191,12 +228,19 @@ class Joystick(QWidget):
 class JoystickWidget(QWidget):
     def __init__(self, name:str, parent=None):
         super(JoystickWidget, self).__init__(parent)
+        self.name = name
         if name.lower() == "left":
+            self.joystickXControlLabel = QLabel("Yaw: 0.0%")
+            self.joystickYControlLabel = QLabel("Throttle: 0.0%")
 
-            self.joystickComponent = Joystick(x="Yaw", y="Throttle")
+
+            self.joystickComponent = Joystick("Yaw", "Throttle", self.joystickXControlLabel, self.joystickYControlLabel)
 
         elif name.lower() == "right":
-            self.joystickComponent = Joystick(x="Roll", y="Pitch")
+            self.joystickXControlLabel = QLabel("Roll: 0.0%")
+            self.joystickYControlLabel = QLabel("Pitch: 0.0%")
+
+            self.joystickComponent = Joystick("Roll", "Pitch", self.joystickXControlLabel, self.joystickYControlLabel)
 
         self.joystickComponent.setObjectName(f"joystick-{name}")
         self.joystickLayout = QVBoxLayout()
@@ -237,6 +281,8 @@ class JoystickWidget(QWidget):
 
             self.joystickLayout.addWidget(self.joystickThrottleDownLabel)
 
+            self.joystickLayout.addWidget(self.joystickXControlLabel)
+            self.joystickLayout.addWidget(self.joystickYControlLabel)
 
         #right joy
         elif name.lower() == "right":
@@ -259,6 +305,9 @@ class JoystickWidget(QWidget):
             self.joystickLayout.addLayout(self.joystickHorizontalLayout)
 
             self.joystickLayout.addWidget(self.joystickPitchBackwardLabel)
+
+            self.joystickLayout.addWidget(self.joystickXControlLabel)
+            self.joystickLayout.addWidget(self.joystickYControlLabel)
 
 
 
@@ -286,7 +335,7 @@ class JoystickWidget(QWidget):
         #Spacing Layout
         self.joystickLayout.setStretch(0,2)
         self.joystickLayout.setStretch(1,2)
-        self.joystickLayout.setStretch(6,2)
+        self.joystickLayout.setStretch(8,2)
 
 
     def getJoystickLayout(self):
@@ -299,5 +348,6 @@ class JoystickWidget(QWidget):
         
     def moveJoystick(self, action:str):
         
-        self.joystickComponent.moveJoystick(action)
+        joystickDir = self.joystickComponent.moveJoystick(action)
 
+        
