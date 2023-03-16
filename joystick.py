@@ -78,7 +78,16 @@ class Joystick(QWidget):
                 self.yControlValue = distanceY
 
                 #round value to 1 d.p. here
-                return ({self.xControl:round(distanceX,1), self.yControl:-round(distanceY,1)})
+                roundedX = round(distanceX,1)
+                roundedY = -round(distanceY,1)
+
+                #check for correct signage here
+                if roundedY == -0.0:
+                    roundedY = 0.0
+                
+                if roundedX == -0.0:
+                    roundedX = 0.0
+                return ({self.xControl:roundedX, self.yControl:roundedY})
 
                 
         
@@ -141,19 +150,40 @@ class Joystick(QWidget):
         print("reset to original pos")
         print(self.joystickDirection())
 
-    def moveJoystick(self, action, posOrNeg):
-        if self.xControl == action:
+    def moveJoystick(self, action):
+        """
+            Move joystick with keys
+        """
+        posOrNeg = -1
+
+        #check for positive/negative direction
+        #---------------------------------------------------------
+        for posWord in ["up", "clockwise", "forward", "right"]:
+            if posWord in action.casefold():
+                posOrNeg = 1
+                break
+
+        for negWord in ["down", "anticlockwise", "backward", "left"]:
+            if negWord in action.casefold():
+                posOrNeg = -1
+                break
+        #---------------------------------------------------------
+
+        #check for x axis control
+        if self.xControl.casefold() in action.casefold():
             self.offsetFromTopLeft.setX(self.offsetFromTopLeft.x() + posOrNeg*0.1*self.width()/2)
             self.offsetFromTopLeft = self._boundJoystick(self.offsetFromTopLeft)
+            print(self.joystickDirection(moveByKey=True))
+            self.update() #redraw joystick
 
-        elif self.yControl == action:
+        #check for y axis control
+        elif self.yControl.casefold() in action.casefold():
             
             # We use negative here since the qpainter class moving down is positive
             self.offsetFromTopLeft.setY(self.offsetFromTopLeft.y() + -posOrNeg*0.1*self.height()/2)
             self.offsetFromTopLeft = self._boundJoystick(self.offsetFromTopLeft)
-        
-        print(self.joystickDirection(moveByKey=True))
-        self.update() #redraw joystick
+            print(self.joystickDirection(moveByKey=True))
+            self.update() #redraw joystick
 
 
 
@@ -269,50 +299,5 @@ class JoystickWidget(QWidget):
         
     def moveJoystick(self, action:str):
         
-        try:
-            isPositive = False
-            for key in self.keyActions.keys():
-                #check for substring
-                if key.casefold() in action.casefold():
-                    posOrNeg = -1
-                    if "anticlockwise" in action.casefold():
-                        self.keyActions[key] -= 10
+        self.joystickComponent.moveJoystick(action)
 
-                        #check for boundary
-                        if abs(self.keyActions[key]) > 100:
-                            self.keyActions[key] = 100 if self.keyActions[key] > 0 else -100
-
-                        self.joystickComponent.moveJoystick(key, posOrNeg)
-                        print({key:self.keyActions[key]})
-                        break
-
-
-                    #check for +ve keyword
-                    for posDirectionKeyWord in ["up", "forward", "right", "clockwise"]:
-                        if posDirectionKeyWord in action.casefold():
-                            isPositive = True
-                            print(key)
-                            self.keyActions[key] += 10
-                            posOrNeg = 1
-                            break
-
-                    if isPositive == False:
-                        posOrNeg = -1
-                        self.keyActions[key] -= 10
-
-
-                    #check for boundary
-                    if abs(self.keyActions[key]) > 100:
-                        self.keyActions[key] = 100 if self.keyActions[key] > 0 else -100
-
-                    self.joystickComponent.moveJoystick(key, posOrNeg)
-                    print({key:self.keyActions[key]}) #TODO sent this value to Zehui interface
-
-                    break #break out of outer for loop
-                    
-                    
-
-            
-        except Exception as e:
-            print(e)
-            return None
