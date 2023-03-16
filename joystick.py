@@ -27,6 +27,9 @@ class Joystick(QWidget):
         painter.setBrush(Qt.blue)
         painter.drawEllipse(self._ellipseHandle())
 
+    def resizeEvent(self, event):
+        self.recenterJoystick()
+
     def _ellipseHandle(self):
         """
             Gets the dimension and location of the ellipse
@@ -55,22 +58,41 @@ class Joystick(QWidget):
             limitLine.setLength(self.__maxDistance)
         return limitLine.p2()
 
-    def joystickDirection(self):
+    def joystickDirection(self, moveByKey = False):
         """
             Gets the current joystick direction in terms of
             horizontal and vertical axis
         """
         if not self.grabHandle:
-            return "User did not drag or click the joystick handle"
+            if moveByKey is False:
+                return "User did not drag or click the joystick handle"
+
+            else:
+                norm = QLineF(self._center(), self.offsetFromTopLeft)
+                currentDistanceX = norm.dx()
+                currentDistanceY = norm.dy()
+
+                distanceX = min(currentDistanceX / self.__maxDistance, 1.0)
+                distanceY = min(currentDistanceY / self.__maxDistance, 1.0)
+                self.xControlValue = distanceX
+                self.yControlValue = distanceY
+
+                #round value to 1 d.p. here
+                return ({self.xControl:round(distanceX,1), self.yControl:-round(distanceY,1)})
+
+                
+        
         norm = QLineF(self._center(), self.offsetFromTopLeft)
         currentDistanceX = norm.dx()
         currentDistanceY = norm.dy()
 
         distanceX = min(currentDistanceX / self.__maxDistance, 1.0)
         distanceY = min(currentDistanceY / self.__maxDistance, 1.0)
-        self.xControl = distanceX
-        self.yControl = distanceY
-        return ({"x":distanceX, "y":-distanceY})
+        self.xControlValue = distanceX
+        self.yControlValue = distanceY
+                
+        #round value 1 d.p. here
+        return ({self.xControl:round(distanceX,1), self.yControl:-round(distanceY,1)})
 
 
     def mousePressEvent(self, event):
@@ -121,16 +143,16 @@ class Joystick(QWidget):
 
     def moveJoystick(self, action, posOrNeg):
         if self.xControl == action:
-            
-            self.offsetFromTopLeft.setX(self.offsetFromTopLeft.x() + posOrNeg*0.1*self.width())
+            self.offsetFromTopLeft.setX(self.offsetFromTopLeft.x() + posOrNeg*0.1*self.width()/2)
             self.offsetFromTopLeft = self._boundJoystick(self.offsetFromTopLeft)
 
         elif self.yControl == action:
             
             # We use negative here since the qpainter class moving down is positive
-            self.offsetFromTopLeft.setY(self.offsetFromTopLeft.y() + -posOrNeg*0.1*self.height())
+            self.offsetFromTopLeft.setY(self.offsetFromTopLeft.y() + -posOrNeg*0.1*self.height()/2)
             self.offsetFromTopLeft = self._boundJoystick(self.offsetFromTopLeft)
         
+        print(self.joystickDirection(moveByKey=True))
         self.update() #redraw joystick
 
 
