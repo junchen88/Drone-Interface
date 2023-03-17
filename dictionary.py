@@ -22,3 +22,5 @@ FLIGHTMODE  = "Flight Modes"
 
 SYSBASEDELEMENTSSTR = [OSD, PREARM, ARM, BEEPER]
 ALPHAKEY = ['z', 'x', 'c', 'v', 'b', 'n', 'm']
+
+RESET = "reset"

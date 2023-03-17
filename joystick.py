@@ -2,6 +2,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5 import QtCore
+from dictionary import *
 
 
 class Joystick(QWidget):
@@ -75,13 +76,13 @@ class Joystick(QWidget):
         #-----------------------------------------------------------------
 
     #TODO sent data to interface here
-    def joystickDirection(self, moveByKey = False):
+    def joystickDirection(self, moveByKey = False, moveByCheckBox = False):
         """
             Gets the current joystick direction in terms of
             horizontal and vertical axis
         """
         if not self.grabHandle:
-            if moveByKey is False:
+            if moveByKey is False and moveByCheckBox is False:
                 return "User did not drag or click the joystick handle"
 
             else:
@@ -181,7 +182,7 @@ class Joystick(QWidget):
         self.offsetFromTopLeft = self._center()
         self.update() #redraw joystick
         print("reset to original pos")
-        print(self.joystickDirection())
+        print(self.joystickDirection(moveByCheckBox=True))
 
     def moveJoystick(self, action):
         """
@@ -342,9 +343,22 @@ class JoystickWidget(QWidget):
         return self.joystickLayout
     
     def updateJoystickResetFlag(self):
+        """
+            to update reset flag and recenter joystick
+        """
         self.joystickComponent.changeResetFlag(self.joystickCheckBox.isChecked())
         self.joystickComponent.recenterJoystick()
 
+    def reservedKeyEvent(self, keyDict, key):
+        """
+            when reserved keys are pressed
+        """
+        try:
+            if keyDict[key] == RESET:
+                self.joystickCheckBox.setChecked(not self.joystickCheckBox.isChecked())
+
+        except Exception as e:
+            print(e)
         
     def moveJoystick(self, action:str):
         

@@ -13,28 +13,39 @@ class TrackKeyClass():
         """
             On key press
         """
+
         currentControlSetting = self.keySettingInfo.getUpdateControlSetting()
+        reservedKeyDict = self.keySettingInfo.getReservedKey()
+
         control = None
-        try:
-            print(key.char)
-            control = currentControlSetting[key.char] #TODO prob for special key like ctrl
-        
-        except Exception as e:
-            control = "not set!"
-            
+
+        #get left and right joystick components
+        joystickLeft = self.controlWindow.centralwidget.findChild(QtWidgets.QWidget, "left-joystick-widget")
+        joystickRight = self.controlWindow.centralwidget.findChild(QtWidgets.QWidget, "right-joystick-widget")
+
+        #control key event
         try:
             print(f'alphanumeric key {key.char} pressed, function = {control}')
 
+            control = currentControlSetting[key.char] #TODO prob for special key like ctrl
+
             #TODO call function here to move joystick
-            joystickLeft = self.controlWindow.centralwidget.findChild(QtWidgets.QWidget, "left-joystick-widget")
             joystickLeft.moveJoystick(control)
 
-            joystickRight = self.controlWindow.centralwidget.findChild(QtWidgets.QWidget, "right-joystick-widget")
             joystickRight.moveJoystick(control)
+        
+            
+        except Exception as e:
+            print(f"error: {e}")
 
-        except AttributeError:
-            print('special key {0} pressed'.format(
-                key))
+        #reserved key event
+        try:
+            joystickLeft.reservedKeyEvent(reservedKeyDict, key.char)
+            joystickRight.reservedKeyEvent(reservedKeyDict, key.char)
+
+        except Exception as e:
+            print(f"error: {e}")
+
 
     def on_release(self, key):
         print('{0} released'.format(

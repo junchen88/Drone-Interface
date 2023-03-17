@@ -26,6 +26,14 @@ class KeySettingsInfo():
         digits = string.digits
         self.availableKeys = digits + letters 
 
+        self.reservedChar = {"/":RESET}
+
+    def getReservedKey(self):
+        """
+            To get the reserved key dict
+        """
+        return self.reservedChar
+
     def setUpdateControlSetting(self, currentControlSettings):
         """
             To record the updated key control setting
