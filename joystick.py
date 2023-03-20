@@ -358,7 +358,7 @@ class JoystickWidget(QWidget):
                 self.joystickCheckBox.setChecked(not self.joystickCheckBox.isChecked())
 
         except Exception as e:
-            print(e)
+            print(f"not reserved key: {e}")
         
     def moveJoystick(self, action:str):
         

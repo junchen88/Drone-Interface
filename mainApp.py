@@ -122,10 +122,8 @@ class MainApp():
         self.setMenubarIconStatus(False)
         self.ui.start()
         self.ui.setCameraButtonStatus(False)
-        self.controlWindow = NewControlWindow(self.ui.camThread)
+        self.controlWindow = NewControlWindow(self.ui.camThread, self.keySettingInfo)
         self.controlWindow.closed.connect(self.stopControl)
-
-        self.ui.trackKeyThread.start(self.controlWindow)
 
     def stopControl(self):
         """
@@ -136,7 +134,6 @@ class MainApp():
         # connect its signal to the update_image slot
         self.ui.setCameraButtonStatus(True)
         self.ui.connectToUpdateImage()
-        self.ui.trackKeyThread.stop()
 
     #REDIRECT PAGE AFTER CLICKING TOOLBAR ICONS
     def toPage(self, pageNumber):

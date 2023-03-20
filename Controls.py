@@ -2,7 +2,6 @@ from test import *
 import QThreadClass
 import cv2
 import usefulFunctions as uf
-import TrackKeyClass
 from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtCore import Qt
 from BetaFlightBoxWidget import *
@@ -46,7 +45,6 @@ class Controls(Ui_MainWindow):
         self.camThread.start()
         #------------------------------------------------------------------
 
-        self.trackKeyThread = TrackKeyClass.TrackKeyClass(keySettingInfo)
         initPage2(self, self.availableKeys, self.oldControlSetting, yamlHelper, keySettingInfo)
         
         self.yamlHelper = yamlHelper

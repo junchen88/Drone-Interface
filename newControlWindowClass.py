@@ -4,10 +4,11 @@ import QThreadClass
 import usefulFunctions as uf
 from PyQt5.QtCore import Qt, pyqtSignal
 import time
+from TrackKeyClass import TrackKeyClass
 
 class NewControlWindow(QtWidgets.QMainWindow):
     closed = pyqtSignal() #signal for closed window
-    def __init__(self, camThread):
+    def __init__(self, camThread, keySettingInfo):
         super(NewControlWindow, self).__init__() #init QMainWIndow and self is the window here
         self.setObjectName("controlWindow")
         self.resize(1047, 626)
@@ -30,11 +31,11 @@ class NewControlWindow(QtWidgets.QMainWindow):
         self.joystickWidgetLeft.setObjectName("left-joystick-widget")
         self.joystickWidgetRight.setObjectName("right-joystick-widget")
 
-
         self.joystickGrid.addWidget(self.joystickWidgetLeft,1,0,1,1)
         self.joystickGrid.addWidget(self.joystickWidgetRight,1,1,1,1)
 
-        
+        self.trackKeyThread = TrackKeyClass(self.joystickWidgetLeft, self.joystickWidgetRight, keySettingInfo)
+        self.trackKeyThread.start() #start tracking key
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.centralWidgetGrid.addItem(spacerItem, 0,0,1,1)
         self.controlWindowHorizontalLay.addLayout(self.joystickGrid)
@@ -80,6 +81,7 @@ class NewControlWindow(QtWidgets.QMainWindow):
         """
             Emits signal when window is closed
         """
+        self.trackKeyThread.stop() #stop tracking key
         self.closed.emit()
 
         
