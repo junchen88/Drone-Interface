@@ -37,6 +37,9 @@ class MainApp():
 
     #CREATE ACTIONS FOR TOOL BAR
     def createActions(self, mainWindowBase):
+        """
+            Create menubar icons and map them to relevant page/function
+        """
         oldPageNum = self.ui.stackedWidget.currentIndex()
         self.ui.homeAction = QtWidgets.QAction(mainWindowBase)
         self.ui.homeAction.setText("&Home")
@@ -83,27 +86,64 @@ class MainApp():
         self.ui.stopAction.setText("&Start Drone Control")
         self.ui.stopAction.setIcon(QIcon(QPixmap("./icons/stop-road-sign-icon.png")))
         self.ui.toolBar.addAction(self.ui.stopAction)
-        self.ui.stopAction.triggered.connect(self.stopControl)
+        self.ui.stopAction.triggered.connect(self.closeControlWindow)
         
 
         self.ui.toolBar.setIconSize(QtCore.QSize(48, 48))
         self.ui.toolBar.setStyleSheet("QToolBar{spacing:30px;}")
 
+    def setMenubarIconStatus(self, status):
+        """
+            Disable/enable menubar icon status when the app is
+            in control mode
+        """
+        self.ui.controlAction.setEnabled(status)
+        self.ui.swarmAction.setEnabled(status)
+        self.ui.settingAction.setEnabled(status)
+        self.ui.startAction.setEnabled(status)
+
+    def closeControlWindow(self):
+        """
+            Function for closing the control window
+        """
+
+        try:
+            self.controlWindow.close()
+            
+        
+        except Exception as e:
+            print(f"window doesn't exists: {e}")
+
+
     def startControl(self):
         """
             To start the drone control. Eg. record user pressed key
         """
-        self.controlWindow = NewControlWindow()
+        self.setMenubarIconStatus(False)
+        self.ui.start()
+        self.ui.setCameraButtonStatus(False)
+        self.controlWindow = NewControlWindow(self.ui.camThread)
+        self.controlWindow.closed.connect(self.stopControl)
+
         self.ui.trackKeyThread.start(self.controlWindow)
 
     def stopControl(self):
         """
             To stop the drone control. Eg. stop recording user pressed key
         """
+        self.setMenubarIconStatus(True)
+
+        # connect its signal to the update_image slot
+        self.ui.setCameraButtonStatus(True)
+        self.ui.connectToUpdateImage()
         self.ui.trackKeyThread.stop()
 
     #REDIRECT PAGE AFTER CLICKING TOOLBAR ICONS
     def toPage(self, pageNumber):
+        """
+            Function for changing to different page when users clicked on the
+            menubar icons
+        """
         oldPageNum = self.ui.stackedWidget.currentIndex()
         self.keySettingInfo.didUserIgnoreChanges = False #reset user ignore changes flag
 

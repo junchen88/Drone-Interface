@@ -249,36 +249,37 @@ class Controls(Ui_MainWindow):
 
     def stop(self):
         if self.camThread.isRunning():
+            self.camThread.disconnect()
+
             self.camThread.stop()
 
         else:
             print("no camera is running")
 
+    def connectToUpdateImage(self):
+        """
+            connect signal to update image function for the main page
+        """
+        self.camThread.disconnect()
+
+        self.camThread.change_pixmap_signal.connect(self.update_image)
 
     def update_image(self, frame):
-            """Updates the image_label with a new opencv image"""
-            qt_img = self.convert_cv_qt_show(frame)
-            #self.displayFrame.setPixmap(qt_img)
-        
-    def convert_cv_qt_show(self, frame):
-        """Convert from an opencv image to QPixmap"""
-        
-        rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-        height, width, depth = rgb_image.shape
-        if depth != 3:
-            raise ValueError("Ui_ControlGui: Expected frame in RGB888 format")
-
-        # Construct the showable pixel data
-        bytesPerRow = 3 * width
-        
-        qtImg = QImage(rgb_image.data, width, height, bytesPerRow, QImage.Format_RGB888)
-        qtPix = QPixmap(qtImg)
+        """Updates the image_label with a new opencv image"""
+        qtPix = self.camThread.convert_cv_qt_show(frame)
+        #self.displayFrame.setPixmap(qt_img)
 
         # Scale the image to fit the pane then display
         targetWidth = self.displayFrame.width()
         targetHeight = self.displayFrame.height()
         self.displayFrame.setPixmap(
-            qtPix.scaled(targetWidth, targetHeight, Qt.KeepAspectRatio)
+        qtPix.scaled(targetWidth, targetHeight, Qt.KeepAspectRatio)
         )
-    #_______________________________________________________________________________________________________-
+
+    def setCameraButtonStatus(self, status):
+        """
+            Disable/enable camera button
+        """
+        self.Start.setEnabled(status)
+        self.Stop.setEnabled(status)
+        
