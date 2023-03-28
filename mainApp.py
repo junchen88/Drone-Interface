@@ -6,6 +6,8 @@ from copy import deepcopy
 from dictionary import *
 from newControlWindowClass import NewControlWindow
 
+#TODO ADD DIFFERENT DRONE PROFILE SETTING, SELECT THE DRONE SYSTEM + NAME
+
 HOMEPAGE = 0
 CONTROLPAGE = 1
 SWARMPAGE = 2
@@ -87,7 +89,7 @@ class MainApp():
         self.ui.stopAction.setIcon(QIcon(QPixmap("./icons/stop-road-sign-icon.png")))
         self.ui.toolBar.addAction(self.ui.stopAction)
         self.ui.stopAction.triggered.connect(self.closeControlWindow)
-        
+        self.ui.stopAction.setEnabled(False)
 
         self.ui.toolBar.setIconSize(QtCore.QSize(48, 48))
         self.ui.toolBar.setStyleSheet("QToolBar{spacing:30px;}")
@@ -119,6 +121,8 @@ class MainApp():
         """
             To start the drone control. Eg. record user pressed key
         """
+        self.ui.stopAction.setEnabled(True)
+
         self.setMenubarIconStatus(False)
         self.ui.start()
         self.ui.setCameraButtonStatus(False)
@@ -129,6 +133,8 @@ class MainApp():
         """
             To stop the drone control. Eg. stop recording user pressed key
         """
+        self.ui.stopAction.setEnabled(False)
+
         self.setMenubarIconStatus(True)
 
         # connect its signal to the update_image slot
@@ -143,13 +149,19 @@ class MainApp():
         """
         oldPageNum = self.ui.stackedWidget.currentIndex()
         self.keySettingInfo.didUserIgnoreChanges = False #reset user ignore changes flag
-
+        print("a",self.keySettingInfo.hasControlChanged)
         if self.keySettingInfo.hasControlChanged:
             if self.keySettingInfo.hasSetConfirmClicked:
 
                 self.keySettingInfo.hasSetConfirmClicked = False
                 self.keySettingInfo.hasControlChanged = False
                 self.ui.stackedWidget.setCurrentIndex(pageNumber)
+                # if we are not at the mainpage, then we disable the start control button
+                if pageNumber != 0:
+                    self.ui.startAction.setEnabled(False)
+
+                else:
+                    self.ui.startAction.setEnabled(True)
 
             else:
                 #POP UP MSG SAYING CLICK CONFIRM FIRST
@@ -187,6 +199,14 @@ class MainApp():
                 pass
         else:
             self.ui.stackedWidget.setCurrentIndex(pageNumber)
+
+            # if we are not at the mainpage, then we disable the start control button
+            if pageNumber != 0:
+                self.ui.startAction.setEnabled(False)
+
+            else:
+                self.ui.startAction.setEnabled(True)
+
         
 
         #IF NOT AT SETTING PAGE BEFORE AND SWITCHES TO SETTING PAGE
