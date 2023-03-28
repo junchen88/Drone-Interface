@@ -198,7 +198,15 @@ class Controls(Ui_MainWindow):
                 comboBox = value.getComboBox()
                 self.oldControlSetting[key] = comboBox.currentText()
             #------------------------------------------
-        
+            
+            # gets current selected drone system
+            #----------------------------------------------------------------------
+            currentSelectedSys = self.currentSys
+            currentSysClass = self.getSysClass(currentSelectedSys)
+            #----------------------------------------------------------------------
+
+            currentSysBasedSettings = currentSysClass.getCurrentSettings()
+            self.keySettingInfo.setUpdateDroneFeaturesSetting(currentSysBasedSettings)
 
 
     
@@ -218,6 +226,7 @@ class Controls(Ui_MainWindow):
 
         currentSysBasedSettings = currentSysClass.getCurrentSettings()
         self.keySettingInfo.setUpdateControlSetting(currentControlSettings) #record the updated control setting
+        self.keySettingInfo.setUpdateDroneFeaturesSetting(currentSysBasedSettings)
         self.yamlHelper.setSysBasedSettings(currentSysBasedSettings, currentSelectedSys)
         self.yamlHelper.setControlSettings(currentControlSettings)
         self.yamlHelper.writeSettings(selectedModel)

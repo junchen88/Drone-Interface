@@ -5,6 +5,7 @@ import usefulFunctions as uf
 from PyQt5.QtCore import Qt, pyqtSignal
 import time
 from TrackKeyClass import TrackKeyClass
+from dictionary import *
 
 class NewControlWindow(QtWidgets.QMainWindow):
     closed = pyqtSignal() #signal for closed window
@@ -26,13 +27,24 @@ class NewControlWindow(QtWidgets.QMainWindow):
         self.joystickGrid = QtWidgets.QGridLayout()
         self.joystickGrid.setObjectName("joystickGrid")
 
-        self.joystickWidgetLeft = JoystickWidget("Left")
-        self.joystickWidgetRight = JoystickWidget("Right")
+        self.joystickWidgetLeft = JoystickWidget("Left", keySettingInfo)
+        self.joystickWidgetRight = JoystickWidget("Right", keySettingInfo)
         self.joystickWidgetLeft.setObjectName("left-joystick-widget")
         self.joystickWidgetRight.setObjectName("right-joystick-widget")
 
-        self.joystickGrid.addWidget(self.joystickWidgetLeft,1,0,1,1)
-        self.joystickGrid.addWidget(self.joystickWidgetRight,1,1,1,1)
+        self.joystickGrid.addWidget(self.joystickWidgetLeft,2,0,1,1)
+        self.joystickGrid.addWidget(self.joystickWidgetRight,2,1,1,1)
+
+        self.featureTitle = QtWidgets.QLabel("Feature Key Settings")
+        self.featureTitle.setAlignment(QtCore.Qt.AlignCenter)
+        self.featureTitle.setStyleSheet(TITLESTYLE) 
+        self.joystickGrid.addWidget(self.featureTitle,0,0,1,2)
+
+
+
+        self.featureVerticalLay = self.getFeatureSettingLabelVerticalLay(keySettingInfo)
+        self.joystickGrid.addLayout(self.featureVerticalLay,1,0,1,2)
+        
 
         self.trackKeyThread = TrackKeyClass(self.joystickWidgetLeft, self.joystickWidgetRight, keySettingInfo)
         self.trackKeyThread.start() #start tracking key
@@ -84,4 +96,17 @@ class NewControlWindow(QtWidgets.QMainWindow):
         self.trackKeyThread.stop() #stop tracking key
         self.closed.emit()
 
+    def getFeatureSettingLabelVerticalLay(self, keySettingInfo):
+        currentFeatureSetting = keySettingInfo.getUpdatedDroneFeaturesSetting()
+        featureVerticalLay = QtWidgets.QVBoxLayout()
+        spacerItem = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        featureVerticalLay.addItem(spacerItem)
         
+
+
+        for key, value in currentFeatureSetting.items():
+            labelWidget = QtWidgets.QLabel(f"{value}: {key}")
+            labelWidget.setObjectName(f"{value}-control-window-label")
+            featureVerticalLay.addWidget(labelWidget)
+
+        return featureVerticalLay

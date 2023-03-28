@@ -13,6 +13,7 @@ class ControlSettingWidget(QtWidgets.QWidget):
         self.controlSetVerticalLay = QtWidgets.QVBoxLayout()
         self.controlSetVerticalLay.setObjectName("controlSetVerticalLay")
         self.controlsSetLabel = QtWidgets.QLabel(page)
+        self.controlsSetLabel.setStyleSheet(TITLESTYLE)
         self.controlsSetLabel.setAlignment(QtCore.Qt.AlignCenter)
         self.controlsSetLabel.setObjectName("controlsSetLabel")
         self.controlSetVerticalLay.addWidget(self.controlsSetLabel)

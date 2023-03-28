@@ -118,6 +118,7 @@ class SysBasedFeatureSettingWidget(QtWidgets.QWidget):
         _translate = QtCore.QCoreApplication.translate
 
         self.modeSetLabel.setText(_translate("MainWindow", "Modes/Features"))
+        self.modeSetLabel.setStyleSheet(TITLESTYLE)
         self.allModeSetLabel.setText(_translate("MainWindow", "Additional Features Setting"))
         self.allModeSetBut.setText(_translate("MainWindow", "Additional Features Setting"))
 

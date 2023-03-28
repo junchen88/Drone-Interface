@@ -2,7 +2,7 @@ from dictionary import *
 import string
 
 #TODO allow user to dynamically add drone system + feature instead of hardcoding them
-
+#TODO bug in key setting
 class KeySettingsInfo():
     """
         Stores the information relating to 
@@ -22,6 +22,7 @@ class KeySettingsInfo():
         self.allSettingComboBox = {}
 
         self.updatedControlSetting = {}
+        self.updatedFeatureSetting = {}
         letters = string.ascii_lowercase
         digits = string.digits
         self.availableKeys = digits + letters 
@@ -33,6 +34,25 @@ class KeySettingsInfo():
             To get the reserved key dict
         """
         return self.reservedChar
+    
+    def setUpdateDroneFeaturesSetting(self, currentSysBasedSettings):
+        """
+            To record the updated key feature setting
+        """
+        self.updatedFeatureSetting = {y: x for x, y in currentSysBasedSettings.items()}
+
+    def getUpdatedDroneFeaturesSetting(self):
+        """
+            To record the updated key feature setting
+        """
+        if self.updatedFeatureSetting:
+            return self.updatedFeatureSetting
+        
+        else:
+            #return the default feature key setting
+            key = list(self.defaultSysBasedKeyAsKey.keys())[0]
+            return self.defaultSysBasedKeyAsKey[key]
+
 
     def setUpdateControlSetting(self, currentControlSettings):
         """
@@ -70,13 +90,15 @@ class KeySettingsInfo():
             self.isUserSetDefault = True
 
 
-    def convertToKeyboardAsKeySysBased(self, defaultKeysFromYaml, boxType, comboBoxDict):
+    def convertToKeyboardAsKeySysBased(self, defaultKeysFromYaml, droneSys, comboBoxDict):
         """
             Switch dict value as key and key as dict value
         """
-        self.defaultSysBasedKeyAsKey[boxType] = {y: x for x, y in defaultKeysFromYaml.items()}
+        self.defaultSysBasedKeyAsKey[droneSys] = {y: x for x, y in defaultKeysFromYaml.items()}
         
-        if not self.defaultSysBasedKeyAsKey[boxType]:
+        if not self.defaultSysBasedKeyAsKey[droneSys]:
+            print('Using system default feature key')
+
             i = 0
             alphaKeys = ALPHAKEY.copy()
             for comboBoxLabel, value in comboBoxDict.items():
@@ -93,8 +115,8 @@ class KeySettingsInfo():
 
             #add default keys for other items here
         else:
-            print('NONONONNO')
-            self.isUserSetDefaultFeature[boxType] = True
+            print('Using user set default feature key')
+            self.isUserSetDefaultFeature[droneSys] = True
     
 
 
@@ -181,18 +203,18 @@ class KeySettingsInfo():
         """
             returns the default key for control
             with the assigned key as the dict key
-            and combobox/dropdown menu type as the value
+            and combobox/dropdown menu as the value
         """
         return self.defaultControlKeyAsKey
     
-    def getSysBasedDefaultKeys(self, boxType):
+    def getSysBasedDefaultKeys(self, droneSys):
         """
             returns the default key for drone system based features
             with the assigned key as the dict key
-            and combobox/dropdown menu type as the value
+            and combobox/dropdown menu as the value
         """
         try:
-            return self.defaultSysBasedKeyAsKey[boxType]
+            return self.defaultSysBasedKeyAsKey[droneSys]
         
         except:
             return {}

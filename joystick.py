@@ -227,7 +227,7 @@ class Joystick(QWidget):
 
 
 class JoystickWidget(QWidget):
-    def __init__(self, name:str, parent=None):
+    def __init__(self, name:str, keySettingInfo, parent=None):
         super(JoystickWidget, self).__init__(parent)
         self.name = name
         if name.lower() == "left":
@@ -252,6 +252,7 @@ class JoystickWidget(QWidget):
         self.joystickLayout.addItem(spacerItem)
         self.joystickLabel = QLabel(f"{name} Joystick")
         self.joystickLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.joystickLabel.setStyleSheet(TITLESTYLE)
         self.joystickLabel.setObjectName(f"joystickLabel-{name}")
         self.joystickLayout.addWidget(self.joystickLabel)
         self.joystickHorizontalLayout = QHBoxLayout()
@@ -261,16 +262,20 @@ class JoystickWidget(QWidget):
         #left joy
         if name.lower() == "left":
             self.keyActions = {"Throttle":0,"Yaw":0}
-            self.joystickThrottleUpLabel = QLabel("Throttle Up")
-            self.joystickThrottleDownLabel = QLabel("Throttle Down")
+            tUpText = keySettingInfo.getRelevantComboBox(TU).currentText()
+            tDownText = keySettingInfo.getRelevantComboBox(TD).currentText()
+            self.joystickThrottleUpLabel = QLabel(f"Throttle Up: {tUpText}")
+            self.joystickThrottleDownLabel = QLabel(f"Throttle Down: {tDownText}")
             self.joystickThrottleUpLabel.setAlignment(QtCore.Qt.AlignCenter)
             self.joystickThrottleDownLabel.setAlignment(QtCore.Qt.AlignCenter)
 
 
 
             self.joystickLayout.addWidget(self.joystickThrottleUpLabel)
-            self.joystickYawLeftLabel = QLabel("Yaw Left")
-            self.joystickYawRightLabel = QLabel("Yaw Right")
+            yAntiText = keySettingInfo.getRelevantComboBox(YA).currentText()
+            yClockText = keySettingInfo.getRelevantComboBox(YC).currentText()
+            self.joystickYawLeftLabel = QLabel(f"Yaw Anticlockwise: {yAntiText}")
+            self.joystickYawRightLabel = QLabel(f"Yaw Clockwise: {yClockText}")
 
             
             self.joystickHorizontalLayout.addWidget(self.joystickYawLeftLabel)
@@ -288,15 +293,20 @@ class JoystickWidget(QWidget):
         #right joy
         elif name.lower() == "right":
             self.keyActions = {"Pitch":0,"Roll":0}
-
-            self.joystickPitchForwardLabel = QLabel("Pitch Forward")
-            self.joystickPitchBackwardLabel = QLabel("Pitch Backward")
+            pForwardText = keySettingInfo.getRelevantComboBox(PF).currentText()
+            pBackText = keySettingInfo.getRelevantComboBox(PB).currentText()
+            self.joystickPitchForwardLabel = QLabel(f"Pitch Forward: {pForwardText}")
+            self.joystickPitchBackwardLabel = QLabel(f"Pitch Backward: {pBackText}")
+            
             self.joystickPitchForwardLabel.setAlignment(QtCore.Qt.AlignCenter)
             self.joystickPitchBackwardLabel.setAlignment(QtCore.Qt.AlignCenter)
 
             self.joystickLayout.addWidget(self.joystickPitchForwardLabel)
-            self.joystickRollLeftLabel = QLabel("Roll Left")
-            self.joystickRollRightLabel = QLabel("Roll Right")
+            rLeftText = keySettingInfo.getRelevantComboBox(RL).currentText()
+            rRightText = keySettingInfo.getRelevantComboBox(RR).currentText()
+            self.joystickRollLeftLabel = QLabel(f"Roll Left: {rLeftText}")
+            self.joystickRollRightLabel = QLabel(f"Roll Right: {rRightText}")
+            
 
             self.joystickHorizontalLayout.addWidget(self.joystickRollLeftLabel)
 
@@ -363,5 +373,3 @@ class JoystickWidget(QWidget):
     def moveJoystick(self, action:str):
         
         joystickDir = self.joystickComponent.moveJoystick(action)
-
-        
