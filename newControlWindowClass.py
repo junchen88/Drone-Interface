@@ -53,11 +53,9 @@ class NewControlWindow(QtWidgets.QMainWindow):
         self.trackKeyThread.start() #start tracking key
 
         #Get available features and its status
-        self.featureGrid = self.getFeatureSettingLabelGrid(keySettingInfo)
+        self.featureGrid, self.featureLabelsDict = self.getFeatureSettingLabelGrid(keySettingInfo)
         self.joystickGrid.addLayout(self.featureGrid,1,0,1,1)
 
-        self.featureStatusBox, self.featureLabelsDict = self.getFeatureSettingStatus(keySettingInfo)
-        self.joystickGrid.addLayout(self.featureStatusBox,1,1,1,1)
         self.trackKeyThread.featureChanged.connect(self.changeFeatureStatusDisplay)
 
 
@@ -124,7 +122,8 @@ class NewControlWindow(QtWidgets.QMainWindow):
         featureGrid = QtWidgets.QGridLayout()
 
         row = 0 #to keep track on the row number for grid location
-        
+        featureLabels = {} #to keep track of the label containing the status icon
+
         #loop for getting features and its key setting
         #plus assigning it onto the grid
         for key, value in currentFeatureSetting.items():
@@ -135,33 +134,19 @@ class NewControlWindow(QtWidgets.QMainWindow):
             labelWidget.setObjectName(f"{value}-control-window-label")
             featureGrid.addWidget(labelWidget,row,0,1,1)
             featureGrid.addWidget(combobox,row,1,1,1)
-            row += 1
-
-        return featureGrid
-    
-    def getFeatureSettingStatus(self, keySettingInfo):
-        """
-            Get all the feature status and return
-            the QVBoxLayout containing the status
-            with the icons
-        """
-        featureStatusDict = self.trackKeyThread.featureStatusDict
-        currentFeatureSetting = keySettingInfo.getUpdatedDroneFeaturesSetting()
-        featureStatusBox = QtWidgets.QVBoxLayout()
-        featureLabels = {}
-        for key, value in currentFeatureSetting.items():
-            featureStatus = featureStatusDict[value]
 
             statusLabel = QtWidgets.QLabel()
             pixmap = QtGui.QPixmap(CROSSLOCATION)
             pixmap = pixmap.scaled(16,16)
             statusLabel.setPixmap(pixmap)
             statusLabel.setObjectName(f"{value}-control-window-status-label")
-            featureStatusBox.addWidget(statusLabel)
+            featureGrid.addWidget(statusLabel, row, 2,1,1)
             featureLabels[value] = statusLabel
 
+            row += 1
 
-        return featureStatusBox, featureLabels
+        return featureGrid, featureLabels
+    
 
     def changeFeatureStatusDisplay(self, feature, status):
         """
