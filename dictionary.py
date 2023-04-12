@@ -26,3 +26,6 @@ ALPHAKEY = ['z', 'x', 'c', 'v', 'b', 'n', 'm']
 RESET = "reset"
 
 TITLESTYLE = "font: bold 16pt"
+
+TICKLOCATION = "./icons/tick-green-icon.webp"
+CROSSLOCATION = "./icons/cross-icon.webp"
